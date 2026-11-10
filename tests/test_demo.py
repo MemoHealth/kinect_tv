@@ -9,6 +9,7 @@ from magic_rain.app import STEP
 from magic_rain.config import SCENE_SIZE, DemoConfig
 from magic_rain.coordinates import Viewport
 from magic_rain.sensors.base import SensorHealth
+from magic_rain.sensors.kinect_v1 import SensorError
 from magic_rain.sensors.simulated import OBSTACLE_DEPTH_MM, SimulatedSensor
 from magic_rain.simulation.rain import DemoRain
 
@@ -74,10 +75,14 @@ def test_drops_deflect_to_each_side_and_repeat_deterministically():
 
 
 @pytest.mark.parametrize("args", [[], ["--doctor"]])
-def test_real_modes_report_unavailable_without_simulation(args, capsys):
+def test_real_modes_report_unavailable_without_simulation(args, capsys, monkeypatch):
+    def no_device(sensor):
+        raise SensorError(SensorHealth.NO_DEVICE, "Ingen Kinect hittades.")
+
+    monkeypatch.setattr("magic_rain.diagnostics.KinectV1Sensor.start", no_device)
     assert main(args) == 1
     output = capsys.readouterr()
-    assert "Kinect-stöd" in output.err
+    assert "NO_DEVICE" in output.err
     assert output.out == ""
 
 
