@@ -13,7 +13,7 @@ from .render.bowl import draw_bowl
 from .render.color_mirror import ColorMirror
 from .render.lightpaint import LightPaint
 from .render.outline import Outline
-from .render.output import Presenter, open_display
+from .render.output import Presenter, init_display, open_display
 from .render.scene import Scene
 from .sensors.simulated import FRAME_SIZE, OBSTACLE_DEPTH_MM, SimulatedSensor
 from .settings import (
@@ -46,7 +46,7 @@ def run_scene(
 ) -> int:
     ambient = AmbientRain()
     try:
-        pygame.display.init()
+        init_display()
         pygame.font.init()
         ambient.start()
         return animate(sensor, windowed, ambient, screen)
@@ -215,5 +215,5 @@ def animate(
                 sensor.tilt_status(now),
                 sensor.preview_depth,
             )
-        presenter.draw(canvas, display, text=bool(notice) or panel_visible)
+        presenter.draw(canvas, display)
         pygame.display.flip()

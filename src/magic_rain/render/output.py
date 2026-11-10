@@ -1,7 +1,17 @@
+import os
+import sys
+
 import pygame
 
 from ..config import SCENE_SIZE, WINDOW_SIZE
 from ..coordinates import Viewport
+
+
+def init_display() -> None:
+    if sys.platform == "win32":
+        os.environ.setdefault("SDL_WINDOWS_DPI_AWARENESS", "permonitorv2")
+        os.environ.setdefault("SDL_RENDER_SCALE_QUALITY", "linear")
+    pygame.display.init()
 
 
 def select_display(sizes: list[tuple[int, int]], requested: int | None) -> int:
@@ -21,12 +31,19 @@ def open_display(windowed: bool, requested: int | None) -> pygame.Surface:
     display = select_display(sizes, requested)
     if windowed:
         return pygame.display.set_mode(WINDOW_SIZE, pygame.RESIZABLE, display=display)
+    if sizes[display] == (3840, 2160) and pygame.display.get_driver() == "windows":
+        try:
+            return pygame.display.set_mode(
+                SCENE_SIZE, pygame.FULLSCREEN | pygame.SCALED, display=display
+            )
+        except pygame.error:
+            pass
     return pygame.display.set_mode(sizes[display], pygame.FULLSCREEN, display=display)
 
 
 def list_displays() -> int:
     try:
-        pygame.display.init()
+        init_display()
         for index, (width, height) in enumerate(pygame.display.get_desktop_sizes(), 1):
             print(f"Bildskärm {index}: {width} × {height}")
         return 0
@@ -41,23 +58,23 @@ class Presenter:
     def __init__(self) -> None:
         self._scaled: pygame.Surface | None = None
 
-    def draw(
-        self, canvas: pygame.Surface, display: pygame.Surface, *, text: bool = False
-    ) -> None:
+    def draw(self, canvas: pygame.Surface, display: pygame.Surface) -> None:
         viewport = Viewport.fit(SCENE_SIZE, display.get_size())
         size = viewport.width, viewport.height
-        if size != display.get_size():
+        full_frame = size == display.get_size()
+        if not full_frame:
             display.fill((0, 0, 0))
         if size != SCENE_SIZE:
-            fractional = size[0] % SCENE_SIZE[0] or size[1] % SCENE_SIZE[1]
-            scale = (
-                pygame.transform.smoothscale
-                if text and fractional
-                else pygame.transform.scale
-            )
+            if (
+                full_frame
+                and canvas.get_bitsize() == display.get_bitsize()
+                and canvas.get_masks() == display.get_masks()
+            ):
+                pygame.transform.smoothscale(canvas, size, display)
+                return
             if self._scaled is None or self._scaled.get_size() != size:
-                self._scaled = scale(canvas, size)
+                self._scaled = pygame.transform.smoothscale(canvas, size)
             else:
-                scale(canvas, size, self._scaled)
+                pygame.transform.smoothscale(canvas, size, self._scaled)
             canvas = self._scaled
         display.blit(canvas, (viewport.x, viewport.y))
