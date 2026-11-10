@@ -1,14 +1,13 @@
 ## What and why
 
-Issue: 
-Requirement IDs: 
-Summary (1–3 sentences):
+- Issue reference and requirement IDs
+- Summary in one to three sentences
 
 ## Change set / boundaries
 
-Changed modules:
-WDD changes (or no behavior change):
-Out of scope:
+- Changed modules
+- Applicable WDD changes
+- Out-of-scope work
 
 ## Verification
 

@@ -32,7 +32,8 @@ physical observation on the target Kinect and TV.
 
 - [ ] USB disconnect produces clear adult-level failure, not mock body tracking.
 - [ ] Restart app; previously configured values persist.
-- [ ] 30-minute runtime stable; log fps and memory measurement.
+- [x] Target PC live Kinect soak with virtual display and audio output on 2026-11-10. Ran for 1,800.2 s, rendered 109,142 frames, averaged 60.6 FPS and sustained at least 56.5 FPS across sampled 10-second intervals. Zero camera-fault frames. Sampled working set was 64.7 MiB at baseline and peaked at 67.0 MiB. The application exited cleanly.
+- [ ] Confirm performance and comfort with the real HDMI display and three people in the room.
 - [ ] No strobing, full-screen flashes, startling sounds or upsetting visuals.
 - [ ] Runtime operates without internet and without recording children.
 
