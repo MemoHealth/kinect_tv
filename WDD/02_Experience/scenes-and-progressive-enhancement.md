@@ -39,4 +39,3 @@ Pose magic is a separate feature flag (`pose_magic=false` initially). Requires s
 ## Future game ideas (not implementation instructions)
 
 Direct rain toward a blossom / spinning wheel, collaborative waterfall, rainbow canopy, underwater current, living star field. These are exploratory ideas only and not part of the current acceptance criteria. No achievements, score or instructions without a separate product decision and WDD update.
-
