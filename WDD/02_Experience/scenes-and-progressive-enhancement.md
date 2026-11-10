@@ -26,6 +26,12 @@ The adult panel switches between Regn and Snö and remembers the selection.
 Snow uses slow drifting flakes and an icy palette. Flakes react to all visible
 depth silhouettes. The winter scene keeps the same outlines and plays quietly.
 
+The two Lustiga huset scenes warp the existing depth mask after normal mirror
+mapping. Konvex enlarges shapes near the center and Konkav compresses them.
+The mapping stays inside the camera field and preserves the left-to-right
+order of participants. Contours and decorative particles use the warped
+mask, with a violet backdrop and no RGB camera image.
+
 ## Optional reliable skeleton feature gate
 
 Pose magic is a separate feature flag (`pose_magic=false` initially). Requires simultaneous RGB+depth stability or proven single-stream human pose inference on real hardware; test with small children, different heights, occlusions, backlighting and overlap. If confidence is low, silently fall back to silhouette reactions. Any gesture must feel like an *amplification* of natural motion; avoid commands and tutorial overlays.
