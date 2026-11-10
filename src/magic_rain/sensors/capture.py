@@ -25,10 +25,10 @@ class LatestDepth:
             self._latest = None
             return frame, self._error
 
-    def stop(self) -> bool:
+    def stop(self, timeout_s: float = 2) -> bool:
         self._stop.set()
         if self._thread.ident is not None:
-            self._thread.join(2)
+            self._thread.join(timeout_s)
         return not self._thread.is_alive()
 
     def _capture(self) -> None:

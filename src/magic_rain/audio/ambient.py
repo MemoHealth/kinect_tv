@@ -14,21 +14,22 @@ def rain_loop(sample_rate: int) -> np.ndarray:
 
 class AmbientRain:
     def __init__(self) -> None:
-        self._channel: pygame.mixer.Channel | None = None
+        self._sound: pygame.mixer.Sound | None = None
 
     def start(self) -> None:
         try:
             pygame.mixer.init(frequency=22050, size=-16, channels=1, allowedchanges=0)
-            sound = pygame.sndarray.make_sound(rain_loop(22050))
-            sound.set_volume(0.22)
-            self._channel = sound.play(loops=-1, fade_ms=2000)
+            self._sound = pygame.sndarray.make_sound(rain_loop(22050))
+            self._sound.set_volume(0)
+            self._sound.play(loops=-1, fade_ms=2000)
         except pygame.error:
             pygame.mixer.quit()
+            self._sound = None
 
     def volume(self, level: float) -> None:
-        if self._channel is not None:
-            self._channel.set_volume(level)
+        if self._sound is not None:
+            self._sound.set_volume(0.22 * level)
 
     def stop(self) -> None:
         pygame.mixer.quit()
-        self._channel = None
+        self._sound = None

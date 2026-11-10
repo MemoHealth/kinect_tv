@@ -24,6 +24,14 @@ class ForegroundTracker:
         self._mirrored = mirrored
         self._empty = np.zeros(background.shape, dtype=np.bool_)
         self._last: Foreground | None = None
+        self._margin = 0.0
+        self._far = 3800
+
+    def configure(self, *, mirrored: bool, margin: float, far: int) -> None:
+        self._mirrored = mirrored
+        self._margin = margin
+        self._far = far
+        self._last = None
 
     def update(self, frame: SensorFrame | None, now: float) -> Foreground:
         if frame is not None and now - frame.timestamp_monotonic_s <= STALE_S:
@@ -35,8 +43,11 @@ class ForegroundTracker:
     def _segment(self, frame: SensorFrame) -> Foreground:
         depth = frame.depth_mm
         measured = (self._background != 0) & (depth != 0)
-        foreground = measured & (depth >= 850) & (depth <= 3800)
+        foreground = measured & (depth >= 850) & (depth <= self._far)
         foreground &= self._background - depth >= 120
+        if margin := round(depth.shape[1] * self._margin):
+            foreground[:, :margin] = False
+            foreground[:, -margin:] = False
 
         # Keep coherent regions and bridge single-pixel holes without assigning IDs.
         padded = np.pad(foreground, 1)
