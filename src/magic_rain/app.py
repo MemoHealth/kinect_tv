@@ -154,7 +154,8 @@ def animate(
                 canvas, (11, 19, 34), rect.inflate(36, 20), border_radius=12
             )
             canvas.blit(caption, rect)
-        if panel is not None and panel.visible:
+        panel_visible = panel is not None and panel.visible
+        if panel_visible:
             panel.draw(canvas, settings, sensor.fault)
-        presenter.draw(canvas, display)
+        presenter.draw(canvas, display, text=bool(notice) or panel_visible)
         pygame.display.flip()

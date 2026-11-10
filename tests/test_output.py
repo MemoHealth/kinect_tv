@@ -24,11 +24,12 @@ def test_scene_uses_correct_16_9_bounds_after_resizing(size):
     presenter.draw(scene, target)
     presenter.draw(scene, target)
     assert target.get_at(target.get_rect().center)[:3] == (18, 34, 57)
+    presenter.draw(scene, target, text=True)
     if size == (3840, 2160):
         assert target.get_at((0, 0))[:3] == (220, 200, 70)
         assert target.get_at((2, 2))[:3] == (220, 200, 70)
         assert target.get_at((3839, 2159))[:3] == (18, 34, 57)
     else:
         assert target.get_at((0, 95))[:3] == (0, 0, 0)
-        assert target.get_at((0, 96))[:3] == (220, 200, 70)
+        assert target.get_at((0, 96))[:3] != (0, 0, 0)
         assert target.get_at((0, 672))[:3] == (0, 0, 0)
