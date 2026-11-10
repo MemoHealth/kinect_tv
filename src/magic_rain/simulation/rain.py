@@ -3,7 +3,7 @@ from numpy.typing import NDArray
 
 from ..config import SCENE_SIZE, DemoConfig
 from ..coordinates import Viewport
-from .bowl import BOWL_BOTTOM, BOWL_LEFT, BOWL_RIGHT, Bowl
+from .arm_water import ArmWater
 
 
 class DemoRain:
@@ -22,8 +22,6 @@ class DemoRain:
         self._rng = rng
         self.slide = np.zeros(count)
         self.shimmer = np.zeros(count)
-        self._guided = np.zeros(count, dtype=bool)
-        self._contact_pause = np.zeros(count)
         self._mask: NDArray[np.bool_] | None = None
         self._direction: NDArray[np.int8] | None = None
 
@@ -48,7 +46,7 @@ class DemoRain:
         field: Viewport,
         wind: NDArray[np.float64] | None = None,
         *,
-        bowl: Bowl | None = None,
+        water: ArmWater | None = None,
     ) -> None:
         width, height = SCENE_SIZE
         acceleration, speed_margin = (7, 12) if self.snow else (36, 45)
@@ -69,14 +67,12 @@ class DemoRain:
         self.slide *= 1 - 4 * dt
         self.shimmer *= 1 - 2.4 * dt
         velocity = drift + self.slide
-        if bowl is not None:
-            self._contact_pause -= dt
-            steering = self._guided & (self._contact_pause <= 0)
-            center = (BOWL_LEFT + BOWL_RIGHT) / 2
-            to_bowl = np.clip((center - self.x[steering]) * 2, -360, 360)
-            velocity[steering] = 0.35 * velocity[steering] + to_bowl
         next_x = self.x + velocity * dt
         next_y = self.y + self.speed * dt
+        caught = (
+            water.collect(self.x, self.y, next_x, next_y, field, snow=self.snow)
+            if water is not None else np.zeros(self.x.size, dtype=bool)
+        )
         rows, columns = mask.shape
         directions = self._directions(mask)
         deflection = np.zeros(self.x.size, dtype=np.int8)
@@ -85,7 +81,7 @@ class DemoRain:
             u = (self.x + (next_x - self.x) * fraction - field.x) / field.width
             v = (self.y + (next_y - self.y) * fraction - field.y) / field.height
             inside = (0 <= u) & (u < 1) & (0 <= v) & (v < 1)
-            indices = np.flatnonzero(inside & (deflection == 0))
+            indices = np.flatnonzero(inside & (deflection == 0) & ~caught)
             sx = (u[indices] * columns).astype(int)
             sy = (v[indices] * rows).astype(int)
             hit = mask[sy, sx]
@@ -97,20 +93,20 @@ class DemoRain:
         self.shimmer[hits] = 1
         next_y[hits] = self.y[hits] + 3 * dt
 
-        if bowl is not None:
-            self._guided[hits] = True
-            self._contact_pause[hits] = 0.35
         next_x = self.x + velocity * dt
-        floor = BOWL_BOTTOM if bowl is not None else height + 20
-        recycled = next_y >= floor
-        if bowl is not None:
-            recycled |= bowl.catch(self.x, self.y, next_x, next_y, self._guided)
+        floor = height - 12 if water is not None else height + 20
+        recycled = (next_y >= floor) | caught
         self.x[:] = next_x % width
         self.x[recycled] = self._rng.uniform(0, width, np.count_nonzero(recycled))
         self.speed[recycled] = self._start_speed[recycled]
         self.slide[recycled] = 0
         self.shimmer[recycled] = 0
-        self._guided[recycled] = False
-        self._contact_pause[recycled] = 0
         self.y[:] = (next_y + 40) % (height + 60) - 40
         self.y[recycled] = -40
+        if water is not None:
+            indices = np.flatnonzero(recycled)
+            spills = water.take_spills(min(indices.size, 8))
+            for index, (x, y, speed) in zip(indices[:len(spills)], spills, strict=True):
+                self.x[index], self.y[index] = x, y
+                self.slide[index] = speed
+                self.shimmer[index] = 0.65

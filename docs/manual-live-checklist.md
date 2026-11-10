@@ -24,7 +24,7 @@ physical observation on the target Kinect and TV.
 - [ ] Mirror directions feel natural.
 - [ ] Stationary or seated participant can influence rain.
 - [ ] Three people can affect the rain at the same time when in view. Check partial overlap and verify that the rain still responds to the visible silhouettes.
-- [ ] Use one or more silhouettes to fill the bowl with rain and then snow. Verify an empty play zone leaves the bowl unchanged.
+- [ ] Hold both arms to form a cup. Verify water and snow rise inside the shape, overflow at the lower arm and fall when the arms open.
 - [ ] Select Ljusmåleri and check that movements from three people leave visible fading rainbow trails.
 - [ ] Select each Lustiga huset lens on a free Kinect and verify the live color reflection. Leave the scene and verify depth-only play resumes.
 - [x] Local hardware smoke test received 300 depth frames and 295 nonempty color frames in 10 s. An integrated virtual-display run rendered 45 frames of the real color mirror and cleared the color image on return to depth-only play. No images were saved.

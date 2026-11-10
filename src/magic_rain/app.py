@@ -9,7 +9,7 @@ from .coordinates import Viewport
 from .interaction.field import MotionField
 from .interaction.funhouse import Funhouse
 from .live import LiveInput
-from .render.bowl import draw_bowl
+from .render.arm_water import draw_arm_water
 from .render.color_mirror import ColorMirror
 from .render.lightpaint import LightPaint
 from .render.outline import Outline
@@ -24,7 +24,7 @@ from .settings import (
     save_settings,
     settings_path,
 )
-from .simulation.bowl import Bowl
+from .simulation.arm_water import ArmWater
 from .simulation.rain import DemoRain
 from .ui.parent import ParentPanel
 
@@ -86,7 +86,7 @@ def animate(
     path = settings_path()
     settings = load_settings(path) if panel is not None else Settings()
     rain = DemoRain(DemoConfig(), snow=settings.scene != "Regn")
-    bowl = Bowl()
+    arm_water = ArmWater()
     ambient.volume(0 if rain.snow else VOLUME[settings.sound])
     if isinstance(sensor, LiveInput):
         sensor.configure(settings)
@@ -137,7 +137,7 @@ def animate(
                 sensor.configure(settings)
                 if name == "scene":
                     rain = DemoRain(DemoConfig(), snow=settings.scene != "Regn")
-                    bowl = Bowl()
+                    arm_water = ArmWater()
                     lightpaint.clear()
                     use_color = settings.scene in FUNHOUSE_STRENGTH
                     sensor.set_color(use_color)
@@ -169,7 +169,9 @@ def animate(
             notice = sensor.notice
 
         warp = FUNHOUSE_STRENGTH.get(settings.scene, 0.0)
-        vessel = bowl if settings.scene in ("Regn", "Snö") else None
+        water = arm_water if settings.scene in ("Regn", "Snö") else None
+        if water is not None:
+            water.update(mask, field)
         painting = settings.scene == PAINT_SCENE
         visible_mask = mirrors.warp(mask, warp)
         rgb = sensor.color_image if isinstance(sensor, LiveInput) and warp else None
@@ -178,7 +180,7 @@ def animate(
                 lightpaint.update(mask, STEP)
             elif rgb is None:
                 motion.update(visible_mask, STEP)
-                rain.step(STEP, visible_mask, field, motion.wind, bowl=vessel)
+                rain.step(STEP, visible_mask, field, motion.wind, water=water)
             remaining -= STEP
 
         if rgb is not None and color_mirror is not None:
@@ -196,8 +198,8 @@ def animate(
                 INTENSITY[settings.intensity],
                 funhouse=bool(warp),
             )
-        if vessel is not None:
-            draw_bowl(canvas, vessel, snow=rain.snow)
+        if water is not None:
+            draw_arm_water(canvas, water, field, snow=rain.snow)
         if rgb is None:
             outline.draw(canvas, visible_mask, dt)
         if notice:
