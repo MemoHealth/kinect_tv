@@ -9,14 +9,23 @@ from .tilt import TILT_SETTLE_S, Tilt
 class LatestDepth:
     """Own one blocking adapter and transfer only the newest pending frame."""
 
-    def __init__(self, sensor: KinectV1Sensor) -> None:
+    def __init__(self, sensor: KinectV1Sensor, *, tilt: Tilt | None = None) -> None:
         self._sensor = sensor
         self._lock = Lock()
         self._stop = Event()
         self._thread = Thread(target=self._capture, daemon=True)
         self._latest: SensorFrame | None = None
         self._error: SensorHealth | None = None
-        self._tilt = Tilt()
+        self._tilt = Tilt() if tilt is None else tilt
+
+    def replacement(self, sensor: KinectV1Sensor) -> "LatestDepth":
+        with self._lock:
+            limits = Tilt(
+                settled_at=self._tilt.settled_at,
+                next_move=self._tilt.next_move,
+                moves=self._tilt.moves,
+            )
+        return LatestDepth(sensor, tilt=limits)
 
     def start(self) -> None:
         self._thread.start()
@@ -64,7 +73,7 @@ class LatestDepth:
     def _capture(self) -> None:
         try:
             self._sensor.start()
-            last_frame = monotonic()
+            last_frame = max(monotonic(), self._tilt.settled_at)
             read_angle = False
             while not self._stop.is_set():
                 if self._move_camera():

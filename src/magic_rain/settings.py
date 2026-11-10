@@ -49,6 +49,8 @@ def load_settings(path: Path) -> Settings:
     valid = {
         key: data[key] for key, values in OPTIONS.items() if data.get(key) in values
     }
+    if valid.get("scene") in FUNHOUSE_STRENGTH:
+        valid.pop("scene")
     return Settings(**valid)
 
 
@@ -60,7 +62,10 @@ def save_settings(path: Path, settings: Settings) -> bool:
             mode="w", encoding="utf-8", dir=path.parent, delete=False
         ) as output:
             temporary = Path(output.name)
-            json.dump({"version": 1, **asdict(settings)}, output, ensure_ascii=False)
+            values = asdict(settings)
+            if settings.scene in FUNHOUSE_STRENGTH:
+                values["scene"] = "Regn"
+            json.dump({"version": 1, **values}, output, ensure_ascii=False)
         temporary.replace(path)
         return True
     except OSError:

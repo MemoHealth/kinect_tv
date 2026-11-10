@@ -20,6 +20,10 @@ class LiveInput:
         self._retry_after: float | None = None
         self.fault = False
         self.preview_depth: NDArray[np.uint16] | None = None
+        self.color_image: NDArray[np.uint8] | None = None
+        self._color_time = 0.0
+        self._color_enabled = False
+        self._restart_for_color = False
         self.notice = "Låt ytan framför kameran vara tom en kort stund."
 
     def start(self) -> None:
@@ -27,6 +31,13 @@ class LiveInput:
 
     def stop(self) -> bool:
         return self._capture.stop()
+
+    def set_color(self, enabled: bool) -> None:
+        if self._color_enabled != enabled:
+            self._color_enabled = enabled
+            self.color_image = None
+            self._restart_for_color = True
+            self._capture.stop(timeout_s=0)
 
     def configure(self, settings: Settings) -> None:
         self._mirrored = settings.mirror == "På"
@@ -45,7 +56,9 @@ class LiveInput:
             self._retry_after = now + 3
             if not self._capture.stop(timeout_s=0):
                 return
-            self._capture = LatestDepth(KinectV1Sensor())
+            self._capture = self._capture.replacement(
+                KinectV1Sensor(color=self._color_enabled)
+            )
             self._capture.start()
         self._tracker = None
         self._calibration = BackgroundCalibration()
@@ -62,9 +75,18 @@ class LiveInput:
         return self._capture.tilt_status(now)
 
     def mask(self, now: float, *, preview: bool = False) -> NDArray[np.bool_]:
+        if self._restart_for_color:
+            if not self._capture.stop(timeout_s=0):
+                return self._empty
+            self._capture = self._capture.replacement(
+                KinectV1Sensor(color=self._color_enabled)
+            )
+            self._capture.start()
+            self._restart_for_color = False
         frame, error = self._capture.take()
         if error is not None:
             self.preview_depth = None
+            self.color_image = None
             self.fault = True
             self.notice = "Kinect svarar inte. Kontrollera USB och ström. F1 för hjälp."
             if self._retry_after is None:
@@ -74,6 +96,7 @@ class LiveInput:
             return self._empty
         if self._capture.tilt_status(now)[1]:
             self.preview_depth = None
+            self.color_image = None
             self.notice = "Kameran justeras."
             return self._empty
         if not preview:
@@ -81,13 +104,23 @@ class LiveInput:
         elif frame is not None:
             depth = frame.depth_mm
             self.preview_depth = depth[:, ::-1] if self._mirrored else depth
+        if self._color_enabled and frame is not None and frame.rgb is not None:
+            self.color_image = frame.rgb
+            self._color_time = frame.timestamp_monotonic_s
+        if now - self._color_time > 0.25:
+            self.color_image = None
+        if frame is not None and self.fault:
+            self.fault = False
+            self._retry_after = None
+            if self._tracker is not None:
+                self.notice = ""
         if self._tracker is not None:
             return self._tracker.update(frame, now).mask
         if frame is not None:
             self.fault = False
             self._retry_after = None
             self.notice = "Låt ytan framför kameran vara tom en kort stund."
-            if preview:
+            if preview or self.color_image is not None:
                 return self._empty
             reference = self._calibration.add(frame)
             if reference is not None:

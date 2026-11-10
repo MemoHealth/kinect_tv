@@ -31,11 +31,11 @@ silhouette. A subtle stream leads recent body contacts toward the bowl.
 Collected water or snow stays visible until the scene changes, and the
 rest of the precipitation recycles at the floor.
 
-The two Lustiga huset scenes warp the existing depth mask after normal mirror
-mapping. Konvex enlarges shapes near the center and Konkav compresses them.
-The mapping stays inside the camera field and preserves the left-to-right
-order of participants. Contours and decorative particles use the warped
-mask, with a violet backdrop and no RGB camera image.
+The two Lustiga huset scenes warp the live Kinect color image. Konvex
+enlarges shapes near the center and Konkav compresses them. The mapping
+stays inside the camera field and preserves participant order. If fresh
+color is unavailable, the same lens warps the existing depth outlines.
+The adult selects color explicitly for each session.
 
 Ljusmåleri uses movement along the silhouettes as a brush. The colors cycle
 through the rainbow and accumulate as a soft, fading long-exposure trail.
