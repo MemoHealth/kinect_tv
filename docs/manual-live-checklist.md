@@ -31,6 +31,7 @@ physical observation on the target Kinect and TV.
 
 ## Fault tolerance and comfort
 
+- [x] In a virtual-display test, an injected SDK disconnect error brought up the camera fault state. Automatic retry then reopened the real Kinect, recalibrated and returned to play.
 - [ ] USB disconnect produces clear adult-level failure, not mock body tracking.
 - [ ] Restart app; previously configured values persist.
 - [x] Target PC live Kinect soak with virtual display and audio output on 2026-11-10. Ran for 1,800.2 s, rendered 109,142 frames, averaged 60.6 FPS and sustained at least 56.5 FPS across sampled 10-second intervals. Zero camera-fault frames. Sampled working set was 64.7 MiB at baseline and peaked at 67.0 MiB. The application exited cleanly.
@@ -44,4 +45,3 @@ physical observation on the target Kinect and TV.
 - [ ] If unsuccessful, tune natural visual response first rather than adding instructions.
 
 **Date / PC / Kinect model / screen / observed issues:**
-- [x] In a virtual-display test, an injected SDK disconnect error brought up the camera fault state. Automatic retry then reopened the real Kinect, recalibrated and returned to play.
