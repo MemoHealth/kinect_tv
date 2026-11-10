@@ -26,6 +26,11 @@ The adult panel switches between Regn and Snö and remembers the selection.
 Snow uses slow drifting flakes and an icy palette. Flakes react to all visible
 depth silhouettes. The winter scene keeps the same outlines and plays quietly.
 
+In Regn and Snö, the bowl fills only with precipitation redirected by a
+silhouette. A subtle stream leads recent body contacts toward the bowl.
+Collected water or snow stays visible until the scene changes, and the
+rest of the precipitation recycles at the floor.
+
 The two Lustiga huset scenes warp the existing depth mask after normal mirror
 mapping. Konvex enlarges shapes near the center and Konkav compresses them.
 The mapping stays inside the camera field and preserves the left-to-right
