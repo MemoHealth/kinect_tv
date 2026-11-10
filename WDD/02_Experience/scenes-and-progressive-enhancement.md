@@ -22,7 +22,9 @@
 
 ## Optional scene variations, only after real playtest
 
-Allow **adult-selected** palette modes `Regn`, `Stjärnor`, `Snö` if these can be delivered mainly via particle parameters without separate engines. No child-facing menu. If scenes cause art confusion or bloat, stick to Rain only. The parent settings panel should remain one screen if these options are added.
+The adult panel switches between Regn and Snö and remembers the selection.
+Snow uses slow drifting flakes and an icy palette. Flakes react to all visible
+depth silhouettes. The winter scene keeps the same outlines and plays quietly.
 
 ## Optional reliable skeleton feature gate
 
@@ -31,3 +33,4 @@ Pose magic is a separate feature flag (`pose_magic=false` initially). Requires s
 ## Future game ideas (not implementation instructions)
 
 Direct rain toward a blossom / spinning wheel, collaborative waterfall, rainbow canopy, underwater current, living star field. These are exploratory ideas only and not part of the current acceptance criteria. No achievements, score or instructions without a separate product decision and WDD update.
+
