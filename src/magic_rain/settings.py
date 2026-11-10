@@ -5,6 +5,7 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 
 OPTIONS = {
+    "scene": ("Regn", "Snö"),
     "sound": ("Av", "Lågt", "Normal"),
     "intensity": ("Milt", "Normalt", "Livligt"),
     "mirror": ("På", "Av"),
@@ -15,6 +16,7 @@ OPTIONS = {
 
 @dataclass(frozen=True)
 class Settings:
+    scene: str = "Regn"
     sound: str = "Lågt"
     intensity: str = "Normalt"
     mirror: str = "På"

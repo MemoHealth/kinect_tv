@@ -6,6 +6,7 @@ from ..simulation.rain import DemoRain
 
 RAIN_COLORS = ((33, 61, 88), (42, 85, 113), (56, 112, 140), (99, 130, 174))
 GLOW_COLOR = (114, 210, 223)
+SNOW_COLORS = ((83, 116, 147), (132, 171, 200), (179, 204, 224), (204, 220, 240))
 
 
 class Scene:
@@ -22,6 +23,13 @@ class Scene:
         )
         base = pygame.surfarray.make_surface(sky.astype(np.uint8))
         self.background = pygame.transform.smoothscale(base, (width, height)).convert()
+        winter = (
+            np.array((9, 16, 31))
+            + mist[:, :, None] * np.array((15, 33, 49))
+            + violet[:, :, None] * np.array((5, 11, 20))
+        )
+        base = pygame.surfarray.make_surface(winter.astype(np.uint8))
+        self.winter = pygame.transform.smoothscale(base, (width, height)).convert()
         self.canvas = self.background.copy()
         self.glow = pygame.Surface((13, 13), pygame.SRCALPHA)
         for radius, alpha in ((6, 12), (4, 22), (2, 46)):
@@ -30,11 +38,16 @@ class Scene:
     def draw(
         self, rain: DemoRain, strength: float = 0.0, intensity: float = 1.0
     ) -> pygame.Surface:
-        self.canvas.blit(self.background, (0, 0))
+        self.canvas.blit(self.winter if rain.snow else self.background, (0, 0))
         for index, (x, y, speed, slide, shimmer) in enumerate(
             zip(rain.x, rain.y, rain.speed, rain.slide, rain.shimmer, strict=True)
         ):
             if intensity < 0.9 and index % 2:
+                continue
+            if rain.snow:
+                color = SNOW_COLORS[index % len(SNOW_COLORS)]
+                radius = 1 + int(speed > 60) + int(shimmer > 0.3)
+                pygame.draw.circle(self.canvas, color, (round(x), round(y)), radius)
                 continue
             length = speed * (0.055 + 0.012 * strength) * intensity
             color = RAIN_COLORS[index % len(RAIN_COLORS)]

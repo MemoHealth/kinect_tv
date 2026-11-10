@@ -28,6 +28,19 @@ def test_ambient_loop_is_reproducible_and_level_bounded():
     np.testing.assert_array_equal(loop, rain_loop(22050))
 
 
+def test_snow_uses_slower_particles_and_deterministic_drift():
+    snow = DemoRain(DemoConfig(particle_count=32), snow=True)
+    replay = DemoRain(DemoConfig(particle_count=32), snow=True)
+    rain = DemoRain(DemoConfig(particle_count=32))
+    assert snow.speed.max() < rain.speed.min()
+    mask = np.zeros((240, 320), dtype=bool)
+    field = Viewport(0, 0, *SCENE_SIZE)
+    for _ in range(20):
+        snow.step(STEP, mask, field)
+        replay.step(STEP, mask, field)
+    np.testing.assert_array_equal(snow.x, replay.x)
+
+
 def test_recycled_drops_reenter_across_the_sky_without_old_shimmer():
     rain = DemoRain(DemoConfig(particle_count=8))
     rain.x[:] = 500

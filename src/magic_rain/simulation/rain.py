@@ -6,13 +6,15 @@ from ..coordinates import Viewport
 
 
 class DemoRain:
-    def __init__(self, config: DemoConfig) -> None:
+    def __init__(self, config: DemoConfig, *, snow: bool = False) -> None:
         width, height = SCENE_SIZE
         rng = np.random.default_rng(config.seed)
         count = config.particle_count
         self.x = rng.uniform(0, width, count)
         self.y = rng.uniform(-40, height, count)
-        self.speed = rng.uniform(110, 390, count)
+        self.snow = snow
+        low, high = (25, 105) if snow else (110, 390)
+        self.speed = rng.uniform(low, high, count)
         self._start_speed = self.speed.copy()
         self.drift = rng.uniform(-9, 16, count)
         self._rng = rng
@@ -43,8 +45,14 @@ class DemoRain:
         wind: NDArray[np.float64] | None = None,
     ) -> None:
         width, height = SCENE_SIZE
-        np.minimum(self.speed + 36 * dt, self._start_speed + 45, out=self.speed)
+        acceleration, speed_margin = (7, 12) if self.snow else (36, 45)
+        np.minimum(
+            self.speed + acceleration * dt, self._start_speed + speed_margin,
+            out=self.speed,
+        )
         drift = self.drift.copy()
+        if self.snow:
+            drift += 21 * np.sin(self.y / 50 + self._start_speed)
         if wind is not None:
             u = (self.x - field.x) / field.width
             v = (self.y - field.y) / field.height
@@ -71,7 +79,7 @@ class DemoRain:
 
         self.slide *= 1 - 4 * dt
         self.shimmer *= 1 - 2.4 * dt
-        self.slide[hits] = 200.0 * deflection[hits]
+        self.slide[hits] = (64.0 if self.snow else 200.0) * deflection[hits]
         self.shimmer[hits] = 1
         next_y[hits] = self.y[hits] + 18 * dt
 

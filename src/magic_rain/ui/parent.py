@@ -5,6 +5,7 @@ from ..settings import Settings
 
 ROWS = (
     ("continue", "Fortsätt leka"),
+    ("scene", "Bana"),
     ("sound", "Ljud"),
     ("intensity", "Regnets styrka"),
     ("mirror", "Spegelbild"),
@@ -13,7 +14,7 @@ ROWS = (
     ("camera", "Kalibrera kameran"),
     ("quit", "Avsluta"),
 )
-PANEL = pygame.Rect(345, 101, 590, 518)
+PANEL = pygame.Rect(345, 76, 590, 568)
 
 
 class ParentPanel:

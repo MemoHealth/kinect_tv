@@ -61,7 +61,6 @@ def animate(
     pygame.display.set_caption(title)
     pygame.mouse.set_visible(windowed)
     scene = Scene()
-    rain = DemoRain(DemoConfig())
     field = Viewport.fit(FRAME_SIZE, SCENE_SIZE)
     mask = np.zeros(FRAME_SIZE[::-1], dtype=np.bool_)
     outline = Outline(field, mask.shape)
@@ -71,7 +70,8 @@ def animate(
     panel = ParentPanel() if not demo else None
     path = settings_path()
     settings = load_settings(path) if panel is not None else Settings()
-    ambient.volume(VOLUME[settings.sound])
+    rain = DemoRain(DemoConfig(), snow=settings.scene == "Snö")
+    ambient.volume(0 if rain.snow else VOLUME[settings.sound])
     if isinstance(sensor, LiveInput):
         sensor.configure(settings)
     remaining = 0.0
@@ -117,7 +117,9 @@ def animate(
             else:
                 settings = settings.change(name, delta)
                 sensor.configure(settings)
-                ambient.volume(VOLUME[settings.sound])
+                if name == "scene":
+                    rain = DemoRain(DemoConfig(), snow=settings.scene == "Snö")
+                ambient.volume(0 if rain.snow else VOLUME[settings.sound])
                 saved = save_settings(path, settings)
                 panel.warning = "" if saved else "Inställningen sparades inte."
         if panel is not None:
