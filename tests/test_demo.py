@@ -89,6 +89,7 @@ def test_real_modes_report_unavailable_without_simulation(args, capsys, monkeypa
 @pytest.mark.parametrize("args", [["--demo", "--windowed"], ["--demo"]])
 def test_demo_draws_and_toggles_fullscreen(args, monkeypatch, capsys):
     monkeypatch.setenv("SDL_VIDEODRIVER", "dummy")
+    monkeypatch.setenv("SDL_AUDIODRIVER", "dummy")
     observed_modes = []
     flip = pygame.display.flip
 
