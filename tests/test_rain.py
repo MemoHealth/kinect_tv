@@ -4,6 +4,7 @@ from magic_rain.app import STEP
 from magic_rain.audio.ambient import rain_loop
 from magic_rain.config import SCENE_SIZE, DemoConfig
 from magic_rain.coordinates import Viewport
+from magic_rain.render.scene import RAIN_LAYERS, _streak
 from magic_rain.simulation.rain import DemoRain
 
 
@@ -53,3 +54,16 @@ def test_recycled_drops_reenter_across_the_sky_without_old_shimmer():
     assert np.ptp(rain.x) > 500
     assert not rain.shimmer.any()
     assert not rain.slide.any()
+
+
+def test_rain_streaks_have_dim_tails_and_brighter_near_tips():
+    far = _streak(16, *RAIN_LAYERS[0][1:])
+    near = _streak(16, *RAIN_LAYERS[2][1:])
+    assert sum(near.get_at((2, 16))[:3]) > sum(far.get_at((2, 16))[:3])
+    assert sum(near.get_at((2, 16))[:3]) > sum(near.get_at((1, 0))[:3])
+
+    rain = DemoRain(DemoConfig(particle_count=60))
+    layers = rain.depth_band.copy()
+    assert set(layers) == {0, 1, 2}
+    rain.step(STEP, np.zeros((240, 320), dtype=bool), Viewport(0, 0, *SCENE_SIZE))
+    np.testing.assert_array_equal(rain.depth_band, layers)

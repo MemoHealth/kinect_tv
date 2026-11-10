@@ -6,6 +6,10 @@ A premium, calm, magical installation rather than an arcade: deep navy, blue-lil
 
 ## Animation grammar
 
+- MR-16 draws three stable visual depth layers for rain. Distant drops
+  stay short and subdued. Near drops have a brighter tip and a tapered,
+  darker tail. A subtle ground haze adds depth, while body impacts remain
+  the brightest local accent.
 - Persistent idle rain with believable gravity and gentle drift.
 - Droplets collide with contour; rain peels away and travels tangentially along body boundary.
 - Faster motion causes locally increased flow and short-lived sparkles, but not a white flash or visually opaque flood.

@@ -17,6 +17,7 @@ class DemoRain:
         low, high = (25, 105) if snow else (110, 390)
         self.speed = rng.uniform(low, high, count)
         self._start_speed = self.speed.copy()
+        self.depth_band = np.digitize(self._start_speed, (190, 305))
         self.drift = rng.uniform(-9, 16, count)
         self._rng = rng
         self.slide = np.zeros(count)
