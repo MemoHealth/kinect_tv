@@ -65,7 +65,16 @@ class DemoRain:
             sx = (u[inside] * wind.shape[1]).astype(int)
             sy = (v[inside] * wind.shape[0]).astype(int)
             drift[inside] += wind[sy, sx]
-        next_x = self.x + (drift + self.slide) * dt
+        self.slide *= 1 - 4 * dt
+        self.shimmer *= 1 - 2.4 * dt
+        velocity = drift + self.slide
+        if bowl is not None:
+            self._contact_pause -= dt
+            steering = self._guided & (self._contact_pause <= 0)
+            center = (BOWL_LEFT + BOWL_RIGHT) / 2
+            to_bowl = np.clip((center - self.x[steering]) * 2, -360, 360)
+            velocity[steering] = 0.35 * velocity[steering] + to_bowl
+        next_x = self.x + velocity * dt
         next_y = self.y + self.speed * dt
         rows, columns = mask.shape
         directions = self._directions(mask)
@@ -82,21 +91,14 @@ class DemoRain:
             deflection[indices[hit]] = directions[sy[hit], sx[hit]]
         hits = deflection != 0
 
-        self.slide *= 1 - 4 * dt
-        self.shimmer *= 1 - 2.4 * dt
         self.slide[hits] = (64.0 if self.snow else 200.0) * deflection[hits]
+        velocity[hits] = drift[hits] + self.slide[hits]
         self.shimmer[hits] = 1
         next_y[hits] = self.y[hits] + 3 * dt
 
-        velocity = drift + self.slide
         if bowl is not None:
-            self._contact_pause -= dt
             self._guided[hits] = True
             self._contact_pause[hits] = 0.35
-            steering = self._guided & (self._contact_pause <= 0)
-            center = (BOWL_LEFT + BOWL_RIGHT) / 2
-            to_bowl = np.clip((center - self.x[steering]) * 2, -360, 360)
-            velocity[steering] = 0.35 * velocity[steering] + to_bowl
         next_x = self.x + velocity * dt
         floor = BOWL_BOTTOM if bowl is not None else height + 20
         recycled = next_y >= floor
