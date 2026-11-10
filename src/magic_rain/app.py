@@ -4,10 +4,11 @@ import numpy as np
 import pygame
 
 from .audio.ambient import AmbientRain
-from .config import DEMO_FPS, SCENE_SIZE, WINDOW_SIZE, DemoConfig
+from .config import DEMO_FPS, SCENE_SIZE, DemoConfig
 from .coordinates import Viewport
 from .interaction.field import MotionField
 from .live import LiveInput
+from .render.output import Presenter, open_display
 from .render.scene import Scene
 from .sensors.simulated import FRAME_SIZE, OBSTACLE_DEPTH_MM, SimulatedSensor
 from .settings import Settings, load_settings, save_settings, settings_path
@@ -19,28 +20,23 @@ VOLUME = {"Av": 0.0, "Lågt": 0.62, "Normal": 1.0}
 INTENSITY = {"Milt": 0.78, "Normalt": 1.0, "Livligt": 1.12}
 
 
-def open_display(windowed: bool) -> pygame.Surface:
-    if windowed:
-        return pygame.display.set_mode(WINDOW_SIZE, pygame.RESIZABLE)
-    desktop_size = pygame.display.get_desktop_sizes()[0]
-    return pygame.display.set_mode(desktop_size, pygame.FULLSCREEN)
+def run_demo(windowed: bool, display: int | None = None) -> int:
+    return run_scene(SimulatedSensor(), windowed, display)
 
 
-def run_demo(windowed: bool) -> int:
-    return run_scene(SimulatedSensor(), windowed)
+def run_live(windowed: bool, display: int | None = None) -> int:
+    return run_scene(LiveInput(), windowed, display)
 
 
-def run_live(windowed: bool) -> int:
-    return run_scene(LiveInput(), windowed)
-
-
-def run_scene(sensor: SimulatedSensor | LiveInput, windowed: bool) -> int:
+def run_scene(
+    sensor: SimulatedSensor | LiveInput, windowed: bool, screen: int | None = None
+) -> int:
     ambient = AmbientRain()
     try:
         pygame.display.init()
         pygame.font.init()
         ambient.start()
-        return animate(sensor, windowed, ambient)
+        return animate(sensor, windowed, ambient, screen)
     except pygame.error as error:
         print(f"Det gick inte att visa regnscenen. {error}")
         return 1
@@ -52,9 +48,13 @@ def run_scene(sensor: SimulatedSensor | LiveInput, windowed: bool) -> int:
 
 
 def animate(
-    sensor: SimulatedSensor | LiveInput, windowed: bool, ambient: AmbientRain
+    sensor: SimulatedSensor | LiveInput,
+    windowed: bool,
+    ambient: AmbientRain,
+    screen: int | None,
 ) -> int:
-    display = open_display(windowed)
+    display = open_display(windowed, screen)
+    presenter = Presenter()
     demo = isinstance(sensor, SimulatedSensor)
     title = "Magic Rain · Simulerad sensor" if demo else "Magic Rain"
     pygame.display.set_caption(title)
@@ -86,7 +86,7 @@ def animate(
                 return 0
             if event.type == pygame.KEYDOWN and event.key == pygame.K_F11:
                 windowed = not windowed
-                display = open_display(windowed)
+                display = open_display(windowed, screen)
             if panel is None:
                 continue
             action = panel.event(event, now)
@@ -156,8 +156,5 @@ def animate(
             canvas.blit(caption, rect)
         if panel is not None and panel.visible:
             panel.draw(canvas, settings, sensor.fault)
-        display.fill((0, 0, 0))
-        if (output.width, output.height) != SCENE_SIZE:
-            canvas = pygame.transform.scale(canvas, (output.width, output.height))
-        display.blit(canvas, (output.x, output.y))
+        presenter.draw(canvas, display)
         pygame.display.flip()

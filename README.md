@@ -4,7 +4,7 @@
 
 A Kinect v1-powered, TV-sized, interactive art installation for children. It is an **experience**, not a game to learn: stand in front of the TV and let magical rain flow around your silhouette and move with your body. No scores, buttons, symbols or instructions during play.
 
-**Status:** Developer demo with synthetic depth and a separate live Kinect depth check. **Runtime:** fully offline, no account, no telemetry. **Primary audience:** young children with adult setup.
+**Status:** Live Kinect play and synthetic developer demo. Physical release checks are tracked in the acceptance checklist. **Runtime:** fully offline, no account, no telemetry. **Primary audience:** young children with adult setup.
 
 ## Run the developer demo
 
@@ -19,7 +19,8 @@ py -3.12 -m venv .venv
 The synthetic obstacle moves on its own. Hold the left mouse button within the
 central camera area to move it by hand. F11 switches between window and
 fullscreen, and Esc exits the demo. Launch with just `--demo` for fullscreen
-on the primary display. The terminal and window title identify simulation.
+using the same display selection as live play. The terminal and window title
+identify simulation.
 After installation, demo and tests run offline.
 
 ```powershell
@@ -48,6 +49,26 @@ three-person play remains an acceptance check.
 F1 or holding Esc opens the Swedish adult panel. Adjust sound, rain
 intensity, mirror and play zone, or recalibrate from that panel. Esc closes
 it. Only preferences are saved in the Windows user's local application data.
+
+## Windows launcher and TCL TV
+
+Double-click `Start-Magic-Rain.cmd` on the existing PC. For a fresh checkout,
+run `Setup-Magic-Rain.cmd` once with Python 3.11 or 3.12 installed. Setup
+installs the Python package and its dependencies. Kinect uses the existing
+Microsoft SDK 1.8 installation.
+
+Connect the TCL 75MQLED85K via HDMI and select that input. In Windows display
+settings, use Extend to address the TV independently and verify the signal
+mode. The launcher prefers a connected 3840 × 2160 desktop. To choose manually:
+
+```powershell
+.\Start-Magic-Rain.cmd --displays
+.\Start-Magic-Rain.cmd --display 2
+```
+
+The number comes from the displayed list. The scene keeps a 16:9 viewport
+at the negotiated output resolution. The physical TV and three-person
+checks are recorded in the [acceptance checklist](docs/manual-live-checklist.md).
 
 ## Start here
 

@@ -15,6 +15,7 @@ class DemoRain:
         self.speed = rng.uniform(110, 390, count)
         self._start_speed = self.speed.copy()
         self.drift = rng.uniform(-9, 16, count)
+        self._rng = rng
         self.slide = np.zeros(count)
         self.shimmer = np.zeros(count)
         self._mask: NDArray[np.bool_] | None = None
@@ -75,5 +76,9 @@ class DemoRain:
         next_y[hits] = self.y[hits] + 18 * dt
 
         self.x[:] = (self.x + (drift + self.slide) * dt) % width
-        self.speed[next_y >= height + 20] = self._start_speed[next_y >= height + 20]
+        recycled = next_y >= height + 20
+        self.x[recycled] = self._rng.uniform(0, width, np.count_nonzero(recycled))
+        self.speed[recycled] = self._start_speed[recycled]
+        self.slide[recycled] = 0
+        self.shimmer[recycled] = 0
         self.y[:] = (next_y + 40) % (height + 60) - 40

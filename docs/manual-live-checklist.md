@@ -9,11 +9,14 @@ physical observation on the target Kinect and TV.
 - [x] The target PC sees Kinect v1 camera `045E:02AE` after the owner installed Microsoft Kinect SDK 1.8 (1.8.0.595). Any later driver change requires approval and a rollback record.
 - [x] Local `--doctor` test on 2026-11-10 received 1,798 depth-only frames at 320 × 240 in 60.0 s (29.9 FPS). Two frame numbers were skipped, the longest interval was 94 ms, and 19.3% of depth pixels had valid values in the current view.
 - [x] A separate single-frame check reopened the SDK stream after the 60 s test.
+- [x] A local six-second run of the live scene completed calibration and rendered 356 frames using a virtual display on the target PC.
 - [ ] Verify physical USB disconnect and reconnect during capture.
 - [ ] Measure depth coverage in the actual play zone and motion-to-screen latency.
 
 ## Whole-room play
 
+- [x] The Windows launcher listed the available display. Automated tests verified full-frame 3840 × 2160 and letterboxed 1024 × 768 output.
+- [x] A 60-second synthetic scenario kept three moving obstacles and 1,500 bounded particles active with 4K presentation checks.
 - [ ] Run fullscreen over HDMI on the TCL 75MQLED85K. Record the actual signal mode and check that the full 16:9 scene is visible without clipping. Confirm calm motion and visible rain in the room.
 - [ ] Enter field -> rain interacts without pressing start.
 - [ ] Head/arms/torso visibly deflect water; rapid arm sweep produces nearby drift.

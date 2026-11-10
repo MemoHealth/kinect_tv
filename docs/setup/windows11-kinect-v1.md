@@ -43,11 +43,10 @@ Sources: https://github.com/OpenKinect/libfreenect and https://github.com/ovrsr/
 # First ensure Python and app dependencies are installed, then:
 python -m magic_rain --demo        # no real camera needed
 python -m magic_rain --doctor      # 60-second real-depth health check
-python -m magic_rain              # single-frame Kinect check
+python -m magic_rain              # live fullscreen with empty-room calibration
 ```
 
-The check uses depth only and reports aggregate numbers. Interactive live
-rain follows the foreground and interaction phases.
+The doctor check uses depth only and reports aggregate numbers.
 
 ## Common problem -> proper response
 
