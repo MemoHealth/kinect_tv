@@ -32,6 +32,7 @@ class Foreground:
 - Depth-only segmentation: stable empty-room depth reference; foreground if current valid distance is significantly **closer** than registered reference; reject invalid/hole pixels.
 - Initial working thresholds: 80–160 mm closer than background, morphological closing/opening, temporal smoothing, minimum component size calibrated to range. These are **not fixed universal constants**.
 - Bound active zone by near/far and adjustable left/right crop; mask must support children and adults, varying body sizes, multiple connected components, and partial occlusion.
+- MR-03 captures a bounded set of empty-room frames and computes a per-pixel median of valid measurements. The reference stays in memory. The mask keeps all coherent foreground regions in one field, including three participants, and mirrors that field once before scene mapping.
 - Confidence decreases with excessive missing-depth pixels, unrealistically sparse mask, or stale frames; low confidence reduces dynamics gracefully.
 - On mask lost, decay rather than abrupt snap; never extrapolate indefinite limbs from stale data.
 
