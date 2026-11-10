@@ -53,6 +53,9 @@ Record its actual signal mode and test three visible people together.
 - MR-12 adds a bowl filled by body-directed rain and snow.
 - MR-13 adds rainbow long-exposure painting from the depth silhouettes.
 - MR-14 adds opt-in live color to the two funhouse lenses.
+- MR-15 smooths outlines and uses the TV's physical resolution.
+- MR-16 layers rain with tapered streaks and brighter contact highlights.
+- MR-17 replaces the fixed bowl with water and snow held by the arm silhouette.
 
 **After MR-00, prioritize MR-02 (real sensor) when the owner has the Kinect and adapter available.** Confirm the hardware before investing in elaborate particles. If hardware cannot be tested yet, MR-01 may progress with simulation, but do not mark a hardware-dependent feature as done.
 

@@ -26,10 +26,11 @@ The adult panel switches between Regn and Snö and remembers the selection.
 Snow uses slow drifting flakes and an icy palette. Flakes react to all visible
 depth silhouettes. The winter scene keeps the same outlines and plays quietly.
 
-In Regn and Snö, the bowl fills only with precipitation redirected by a
-silhouette. A subtle stream leads recent body contacts toward the bowl.
-Collected water or snow stays visible until the scene changes, and the
-rest of the precipitation recycles at the floor.
+In Regn and Snö, a silhouette with an open top, two sides and a closed
+bottom can hold precipitation. A horizontal fill line rises inside the
+shape until it reaches the lower side. Additional precipitation spills
+over that side. Opening the arms releases the accumulated water or snow.
+Up to three separate shapes can collect independently.
 
 The two Lustiga huset scenes warp the live Kinect color image. Konvex
 enlarges shapes near the center and Konkav compresses them. The mapping
