@@ -4,8 +4,10 @@ from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
+FUNHOUSE_STRENGTH = {"Lustiga huset · Konvex": -0.37, "Lustiga huset · Konkav": 0.44}
+
 OPTIONS = {
-    "scene": ("Regn", "Snö"),
+    "scene": ("Regn", "Snö", *FUNHOUSE_STRENGTH),
     "sound": ("Av", "Lågt", "Normal"),
     "intensity": ("Milt", "Normalt", "Livligt"),
     "mirror": ("På", "Av"),

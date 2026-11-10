@@ -7,6 +7,7 @@ from ..simulation.rain import DemoRain
 RAIN_COLORS = ((33, 61, 88), (42, 85, 113), (56, 112, 140), (99, 130, 174))
 GLOW_COLOR = (114, 210, 223)
 SNOW_COLORS = ((83, 116, 147), (132, 171, 200), (179, 204, 224), (204, 220, 240))
+MIRROR_COLORS = ((49, 40, 81), (75, 54, 117), (106, 74, 142), (132, 99, 164))
 
 
 class Scene:
@@ -30,22 +31,36 @@ class Scene:
         )
         base = pygame.surfarray.make_surface(winter.astype(np.uint8))
         self.winter = pygame.transform.smoothscale(base, (width, height)).convert()
+        mirror = (
+            np.array((11, 8, 24))
+            + mist[:, :, None] * np.array((19, 10, 27))
+            + violet[:, :, None] * np.array((16, 7, 23))
+        )
+        base = pygame.surfarray.make_surface(mirror.astype(np.uint8))
+        self.mirror = pygame.transform.smoothscale(base, (width, height)).convert()
         self.canvas = self.background.copy()
         self.glow = pygame.Surface((13, 13), pygame.SRCALPHA)
         for radius, alpha in ((6, 12), (4, 22), (2, 46)):
             pygame.draw.circle(self.glow, (*GLOW_COLOR, alpha), (6, 6), radius)
 
     def draw(
-        self, rain: DemoRain, strength: float = 0.0, intensity: float = 1.0
+        self,
+        rain: DemoRain,
+        strength: float = 0.0,
+        intensity: float = 1.0,
+        *,
+        funhouse: bool = False,
     ) -> pygame.Surface:
-        self.canvas.blit(self.winter if rain.snow else self.background, (0, 0))
+        background = self.winter if rain.snow else self.background
+        self.canvas.blit(self.mirror if funhouse else background, (0, 0))
+        flake_colors = MIRROR_COLORS if funhouse else SNOW_COLORS
         for index, (x, y, speed, slide, shimmer) in enumerate(
             zip(rain.x, rain.y, rain.speed, rain.slide, rain.shimmer, strict=True)
         ):
             if intensity < 0.9 and index % 2:
                 continue
             if rain.snow:
-                color = SNOW_COLORS[index % len(SNOW_COLORS)]
+                color = flake_colors[index % len(flake_colors)]
                 radius = 1 + int(speed > 60) + int(shimmer > 0.3)
                 pygame.draw.circle(self.canvas, color, (round(x), round(y)), radius)
                 continue

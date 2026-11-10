@@ -7,12 +7,19 @@ from .audio.ambient import AmbientRain
 from .config import DEMO_FPS, SCENE_SIZE, DemoConfig
 from .coordinates import Viewport
 from .interaction.field import MotionField
+from .interaction.funhouse import Funhouse
 from .live import LiveInput
 from .render.outline import Outline
 from .render.output import Presenter, open_display
 from .render.scene import Scene
 from .sensors.simulated import FRAME_SIZE, OBSTACLE_DEPTH_MM, SimulatedSensor
-from .settings import Settings, load_settings, save_settings, settings_path
+from .settings import (
+    FUNHOUSE_STRENGTH,
+    Settings,
+    load_settings,
+    save_settings,
+    settings_path,
+)
 from .simulation.rain import DemoRain
 from .ui.parent import ParentPanel
 
@@ -66,11 +73,12 @@ def animate(
     outline = Outline(field, mask.shape)
     clock = pygame.time.Clock()
     motion = MotionField()
+    mirrors = Funhouse()
     notice_font = pygame.font.SysFont("segoeui", 25)
     panel = ParentPanel() if not demo else None
     path = settings_path()
     settings = load_settings(path) if panel is not None else Settings()
-    rain = DemoRain(DemoConfig(), snow=settings.scene == "Snö")
+    rain = DemoRain(DemoConfig(), snow=settings.scene != "Regn")
     ambient.volume(0 if rain.snow else VOLUME[settings.sound])
     if isinstance(sensor, LiveInput):
         sensor.configure(settings)
@@ -118,7 +126,7 @@ def animate(
                 settings = settings.change(name, delta)
                 sensor.configure(settings)
                 if name == "scene":
-                    rain = DemoRain(DemoConfig(), snow=settings.scene == "Snö")
+                    rain = DemoRain(DemoConfig(), snow=settings.scene != "Regn")
                 ambient.volume(0 if rain.snow else VOLUME[settings.sound])
                 saved = save_settings(path, settings)
                 panel.warning = "" if saved else "Inställningen sparades inte."
@@ -146,13 +154,17 @@ def animate(
             mask = sensor.mask(now)
             notice = sensor.notice
 
+        warp = FUNHOUSE_STRENGTH.get(settings.scene, 0.0)
+        visible_mask = mirrors.warp(mask, warp)
         while remaining >= STEP:
-            motion.update(mask, STEP)
-            rain.step(STEP, mask, field, motion.wind)
+            motion.update(visible_mask, STEP)
+            rain.step(STEP, visible_mask, field, motion.wind)
             remaining -= STEP
 
-        canvas = scene.draw(rain, motion.strength, INTENSITY[settings.intensity])
-        outline.draw(canvas, mask, dt)
+        canvas = scene.draw(
+            rain, motion.strength, INTENSITY[settings.intensity], funhouse=bool(warp)
+        )
+        outline.draw(canvas, visible_mask, dt)
         if notice:
             caption = notice_font.render(notice, True, (199, 216, 230))
             rect = caption.get_rect(center=(SCENE_SIZE[0] // 2, SCENE_SIZE[1] - 65))
