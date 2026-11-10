@@ -44,9 +44,17 @@ class Presenter:
     def draw(self, canvas: pygame.Surface, display: pygame.Surface) -> None:
         viewport = Viewport.fit(SCENE_SIZE, display.get_size())
         size = viewport.width, viewport.height
-        if size != display.get_size():
+        full_frame = size == display.get_size()
+        if not full_frame:
             display.fill((0, 0, 0))
         if size != SCENE_SIZE:
+            if (
+                full_frame
+                and canvas.get_bitsize() == display.get_bitsize()
+                and canvas.get_masks() == display.get_masks()
+            ):
+                pygame.transform.smoothscale(canvas, size, display)
+                return
             if self._scaled is None or self._scaled.get_size() != size:
                 self._scaled = pygame.transform.smoothscale(canvas, size)
             else:
