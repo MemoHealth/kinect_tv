@@ -4,7 +4,7 @@
 
 A Kinect v1-powered, TV-sized, interactive art installation for children. It is an **experience**, not a game to learn: stand in front of the TV and let magical rain flow around your silhouette and move with your body. No scores, buttons, symbols or instructions during play.
 
-**Status:** MR-00 developer demo with synthetic depth. **Runtime:** fully offline, no account, no telemetry. **Primary audience:** young children with adult setup.
+**Status:** Developer demo with synthetic depth and a separate live Kinect depth check. **Runtime:** fully offline, no account, no telemetry. **Primary audience:** young children with adult setup.
 
 ## Run the developer demo
 
@@ -30,7 +30,18 @@ After installation, demo and tests run offline.
 MR-00 covers MR-SYS-01 and MR-SYS-06 with an installable package, a typed
 depth-frame contract, aspect-preserving mapping, and a deterministic demo
 loop. The circular obstacle and simple deflection are developer fixtures.
-Live Kinect depth capture is tracked in MR-02.
+## Check the real Kinect
+
+On the target PC with Microsoft Kinect SDK 1.8 installed and Kinect connected:
+
+```powershell
+.\.venv\Scripts\python.exe -m magic_rain --doctor
+```
+
+The check reads depth for 60 seconds and prints frame rate, valid depth
+coverage, gaps in the frame counter, and the longest frame interval. Depth
+images stay in memory. Running without arguments checks one real depth frame.
+Live interactive rain and three-person play are covered by later milestones.
 
 ## Start here
 
@@ -50,4 +61,5 @@ No Switch 2/PS5 connection, no projector/interactive wall/climbing-wall/ball tra
 
 ## Status and ownership
 
-The demo targets this PC. The hardware checklist covers the physical checks.
+The demo and live depth check target this PC. The hardware checklist covers
+remaining physical checks, including HDMI output to the TCL TV.
