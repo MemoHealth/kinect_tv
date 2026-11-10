@@ -14,6 +14,7 @@ class SensorFrame:
     height: int
     source: Literal["kinect_v1", "simulation"]
     dropped_frames_total: int | None = None
+    rgb_coordinates: np.ndarray | None = None  # (H,W,2) int32, optional RGB x/y map
 ```
 
 `SensorAdapter.start()`, `.read_latest(timeout_s) -> SensorFrame | None`, `.health() -> SensorHealth`, `.stop()`. Use explicit statuses (`OK`, `NO_DEVICE`, `DRIVER_ERROR`, `NO_FRAMES`, `UNSTABLE_STREAM`) rather than empty arrays presented as success. Time is monotonic; consumer drops stale frames > ~250 ms.
@@ -33,6 +34,15 @@ class Foreground:
 - Initial working thresholds: 80–160 mm closer than background, morphological closing/opening, temporal smoothing, minimum component size calibrated to range. These are **not fixed universal constants**.
 - Bound active zone by near/far and adjustable left/right crop; mask must support children and adults, varying body sizes, multiple connected components, and partial occlusion.
 - MR-03 captures a bounded set of empty-room frames and computes a per-pixel median of valid measurements. The reference stays in memory. The mask keeps all coherent foreground regions in one field, including three participants, and mirrors that field once before scene mapping.
+- MR-18 also retains an empty-room color reference when available. Capture pairs
+  depth and RGB by device timestamp and maps nearby depth estimates through the
+  Kinect SDK. Color changes can fill a narrow strip beside verified depth when a
+  measurement is missing. Measured background, distance limits and the selected
+  crop still constrain the mask. Missing color data keeps the depth baseline.
+- Empty-room pixels with consistently missing depth are tracked separately from
+  intermittent readings. A coherent, currently measured shape inside the play
+  range can seed foreground against those pixels. The empty background alone
+  never creates a silhouette.
 - Confidence decreases with excessive missing-depth pixels, unrealistically sparse mask, or stale frames; low confidence reduces dynamics gracefully.
 - On mask lost, decay rather than abrupt snap; never extrapolate indefinite limbs from stale data.
 

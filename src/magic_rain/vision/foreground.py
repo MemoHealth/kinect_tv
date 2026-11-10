@@ -18,12 +18,17 @@ class Foreground:
 
 class ForegroundTracker:
     def __init__(
-        self, background: NDArray[np.uint16], *, mirrored: bool = True
+        self, background: NDArray[np.uint16], *, mirrored: bool = True,
+        color_reference: NDArray[np.uint8] | None = None,
+        open_background: NDArray[np.bool_] | None = None,
     ) -> None:
         self._background = background.astype(np.int32)
         self._mirrored = mirrored
         self._empty = np.zeros(background.shape, dtype=np.bool_)
         self._last: Foreground | None = None
+        self._color_reference = color_reference
+        self._open_background = open_background
+        self.color_assist = True
         self._margin = 0.0
         self._far = 3800
 
@@ -43,8 +48,12 @@ class ForegroundTracker:
     def _segment(self, frame: SensorFrame) -> Foreground:
         depth = frame.depth_mm
         measured = (self._background != 0) & (depth != 0)
-        foreground = measured & (depth >= 850) & (depth <= self._far)
-        foreground &= self._background - depth >= 120
+        in_range = (depth >= 850) & (depth <= self._far)
+        foreground = in_range & measured & (self._background - depth >= 120)
+        revealed = None
+        if self._open_background is not None:
+            revealed = in_range & self._open_background
+            foreground |= revealed
         if margin := round(depth.shape[1] * self._margin):
             foreground[:, :margin] = False
             foreground[:, -margin:] = False
@@ -68,10 +77,52 @@ class ForegroundTracker:
         mask = (foreground & coherent) | (measured & (neighbours == 4))
         size = np.count_nonzero(mask)
         coverage = np.count_nonzero(measured)
-        active = 12 <= size <= min(mask.size * 0.65, coverage * 0.90)
+        open_size = 0 if revealed is None else np.count_nonzero(mask & revealed)
+        active = 12 <= size <= mask.size * 0.65 and size - open_size <= coverage * 0.90
         if not active:
             return Foreground(self._empty, 0.0, frame.timestamp_monotonic_s, False)
+        if self.color_assist and frame.rgb_coordinates is not None:
+            self._recover_missing(mask, measured, frame, margin)
         if self._mirrored:
             mask = mask[:, ::-1]
-        confidence = coverage / measured.size
+        usable_depth = coverage if revealed is None else coverage + revealed.sum()
+        confidence = usable_depth / measured.size
         return Foreground(mask, confidence, frame.timestamp_monotonic_s, True)
+
+    def _recover_missing(
+        self, mask: NDArray[np.bool_], measured: NDArray[np.bool_],
+        frame: SensorFrame, margin: int,
+    ) -> None:
+        depth, rgb, coordinates = frame.depth_mm, frame.rgb, frame.rgb_coordinates
+        reference = self._color_reference
+        if rgb is None or coordinates is None or reference is None or not mask.any():
+            return
+        # A broad change (for example, exposure settling) isn't body evidence.
+        sampled_change = np.abs(
+            rgb[::8, ::8].astype(np.int16) - reference[::8, ::8]
+        ).max(axis=2)
+        if (sampled_change >= 28).mean() > 0.35:
+            return
+        radius = 3
+        height, width = mask.shape
+        horizontal = np.pad(mask, ((0, 0), (radius, radius)))
+        band = np.logical_or.reduce(
+            [horizontal[:, i:i + width] for i in range(2 * radius + 1)]
+        )
+        vertical = np.pad(band, ((radius, radius), (0, 0)))
+        band = np.logical_or.reduce(
+            [vertical[i:i + height] for i in range(2 * radius + 1)]
+        )
+        in_range = (depth == 0) | ((depth >= 850) & (depth <= self._far))
+        candidates = band & ~mask & ~measured & in_range
+        if margin:
+            candidates[:, :margin] = False
+            candidates[:, -margin:] = False
+        y, x = np.nonzero(candidates)
+        u, v = coordinates[y, x].T
+        inside = (u >= 0) & (u < width) & (v >= 0) & (v < height)
+        u, v = u[inside], v[inside]
+        delta = np.abs(rgb[v, u].astype(np.int16) - reference[v, u])
+        changed = (delta.max(axis=1) >= 28) & (delta.sum(axis=1) >= 45)
+        if np.count_nonzero(mask) + np.count_nonzero(changed) <= mask.size * 0.65:
+            mask[y[inside][changed], x[inside][changed]] = True

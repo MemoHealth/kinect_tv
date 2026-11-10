@@ -56,6 +56,20 @@ Record its actual signal mode and test three visible people together.
 - MR-15 smooths outlines and uses the TV's physical resolution.
 - MR-16 layers rain with tapered streaks and brighter contact highlights.
 - MR-17 replaces the fixed bowl with water and snow held by the arm silhouette.
+- MR-18 improves camera aiming and repairs small depth gaps using registered color.
+
+### MR-18 — Silhouette recovery and camera alignment
+
+**Requirements:** MR-UX-05, MR-CV-02–04, MR-SYS-03–04.
+**Interfaces:** Optional synchronized SDK color registration in the sensor frame,
+empty-room references in memory, depth-seeded foreground recovery, and an adult
+preview with active-zone borders and calibration progress.
+**Touched modules:** Kinect capture, background/foreground, live input, settings
+and parent panel. **Tests:** missing-depth recovery, rejection of unrelated color
+changes, mirror/crop, missing RGB, calibration while the menu stays open, and
+real head-to-toe framing. **Risks:** lighting changes, color/depth parallax and
+USB bandwidth. **Out of scope:** full RGB-only segmentation, reconstructing
+subjects outside the field of view, new drivers, and pose tracking.
 
 **After MR-00, prioritize MR-02 (real sensor) when the owner has the Kinect and adapter available.** Confirm the hardware before investing in elaborate particles. If hardware cannot be tested yet, MR-01 may progress with simulation, but do not mark a hardware-dependent feature as done.
 

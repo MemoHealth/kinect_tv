@@ -16,6 +16,7 @@ class SensorFrame:
     height: int
     source: Literal["kinect_v1", "simulation"]
     dropped_frames_total: int | None = None
+    rgb_coordinates: NDArray[np.int32] | None = None
 
     def __post_init__(self) -> None:
         if not isfinite(self.timestamp_monotonic_s) or self.timestamp_monotonic_s < 0:
@@ -31,6 +32,12 @@ class SensorFrame:
             raise ValueError("Expected H×W×3 uint8 RGB")
         if self.source not in ("simulation", "kinect_v1"):
             raise ValueError("Unknown frame source")
+        if self.rgb_coordinates is not None and (
+            self.rgb is None
+            or self.rgb_coordinates.dtype != np.int32
+            or self.rgb_coordinates.shape != (*shape, 2)
+        ):
+            raise ValueError("Expected H×W×2 int32 coordinates with RGB")
 
 
 class SensorHealth(Enum):
