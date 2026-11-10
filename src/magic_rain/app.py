@@ -9,6 +9,7 @@ from .coordinates import Viewport
 from .interaction.field import MotionField
 from .interaction.funhouse import Funhouse
 from .live import LiveInput
+from .render.bowl import draw_bowl
 from .render.outline import Outline
 from .render.output import Presenter, open_display
 from .render.scene import Scene
@@ -20,6 +21,7 @@ from .settings import (
     save_settings,
     settings_path,
 )
+from .simulation.bowl import Bowl
 from .simulation.rain import DemoRain
 from .ui.parent import ParentPanel
 
@@ -79,6 +81,7 @@ def animate(
     path = settings_path()
     settings = load_settings(path) if panel is not None else Settings()
     rain = DemoRain(DemoConfig(), snow=settings.scene != "Regn")
+    bowl = Bowl()
     ambient.volume(0 if rain.snow else VOLUME[settings.sound])
     if isinstance(sensor, LiveInput):
         sensor.configure(settings)
@@ -129,6 +132,7 @@ def animate(
                 sensor.configure(settings)
                 if name == "scene":
                     rain = DemoRain(DemoConfig(), snow=settings.scene != "Regn")
+                    bowl = Bowl()
                 ambient.volume(0 if rain.snow else VOLUME[settings.sound])
                 saved = save_settings(path, settings)
                 panel.warning = "" if saved else "Inställningen sparades inte."
@@ -156,15 +160,18 @@ def animate(
             notice = sensor.notice
 
         warp = FUNHOUSE_STRENGTH.get(settings.scene, 0.0)
+        vessel = bowl if settings.scene in ("Regn", "Snö") else None
         visible_mask = mirrors.warp(mask, warp)
         while remaining >= STEP:
             motion.update(visible_mask, STEP)
-            rain.step(STEP, visible_mask, field, motion.wind)
+            rain.step(STEP, visible_mask, field, motion.wind, bowl=vessel)
             remaining -= STEP
 
         canvas = scene.draw(
             rain, motion.strength, INTENSITY[settings.intensity], funhouse=bool(warp)
         )
+        if vessel is not None:
+            draw_bowl(canvas, vessel, snow=rain.snow)
         outline.draw(canvas, visible_mask, dt)
         if notice:
             caption = notice_font.render(notice, True, (199, 216, 230))

@@ -3,6 +3,7 @@ from numpy.typing import NDArray
 
 from ..config import SCENE_SIZE, DemoConfig
 from ..coordinates import Viewport
+from .bowl import BOWL_BOTTOM, BOWL_LEFT, BOWL_RIGHT, Bowl
 
 
 class DemoRain:
@@ -20,6 +21,8 @@ class DemoRain:
         self._rng = rng
         self.slide = np.zeros(count)
         self.shimmer = np.zeros(count)
+        self._guided = np.zeros(count, dtype=bool)
+        self._contact_pause = np.zeros(count)
         self._mask: NDArray[np.bool_] | None = None
         self._direction: NDArray[np.int8] | None = None
 
@@ -43,6 +46,8 @@ class DemoRain:
         mask: NDArray[np.bool_],
         field: Viewport,
         wind: NDArray[np.float64] | None = None,
+        *,
+        bowl: Bowl | None = None,
     ) -> None:
         width, height = SCENE_SIZE
         acceleration, speed_margin = (7, 12) if self.snow else (36, 45)
@@ -81,12 +86,28 @@ class DemoRain:
         self.shimmer *= 1 - 2.4 * dt
         self.slide[hits] = (64.0 if self.snow else 200.0) * deflection[hits]
         self.shimmer[hits] = 1
-        next_y[hits] = self.y[hits] + 18 * dt
+        next_y[hits] = self.y[hits] + 3 * dt
 
-        self.x[:] = (self.x + (drift + self.slide) * dt) % width
-        recycled = next_y >= height + 20
+        velocity = drift + self.slide
+        if bowl is not None:
+            self._contact_pause -= dt
+            self._guided[hits] = True
+            self._contact_pause[hits] = 0.35
+            steering = self._guided & (self._contact_pause <= 0)
+            center = (BOWL_LEFT + BOWL_RIGHT) / 2
+            to_bowl = np.clip((center - self.x[steering]) * 2, -360, 360)
+            velocity[steering] = 0.35 * velocity[steering] + to_bowl
+        next_x = self.x + velocity * dt
+        floor = BOWL_BOTTOM if bowl is not None else height + 20
+        recycled = next_y >= floor
+        if bowl is not None:
+            recycled |= bowl.catch(self.x, self.y, next_x, next_y, self._guided)
+        self.x[:] = next_x % width
         self.x[recycled] = self._rng.uniform(0, width, np.count_nonzero(recycled))
         self.speed[recycled] = self._start_speed[recycled]
         self.slide[recycled] = 0
         self.shimmer[recycled] = 0
+        self._guided[recycled] = False
+        self._contact_pause[recycled] = 0
         self.y[:] = (next_y + 40) % (height + 60) - 40
+        self.y[recycled] = -40
