@@ -37,6 +37,10 @@ The mapping stays inside the camera field and preserves the left-to-right
 order of participants. Contours and decorative particles use the warped
 mask, with a violet backdrop and no RGB camera image.
 
+Ljusmåleri uses movement along the silhouettes as a brush. The colors cycle
+through the rainbow and accumulate as a soft, fading long-exposure trail.
+Each participant can contribute at once. Switching scenes clears the trail.
+
 ## Optional reliable skeleton feature gate
 
 Pose magic is a separate feature flag (`pose_magic=false` initially). Requires simultaneous RGB+depth stability or proven single-stream human pose inference on real hardware; test with small children, different heights, occlusions, backlighting and overlap. If confidence is low, silently fall back to silhouette reactions. Any gesture must feel like an *amplification* of natural motion; avoid commands and tutorial overlays.
