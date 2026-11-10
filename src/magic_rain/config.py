@@ -7,7 +7,7 @@ DEMO_FPS = 60
 
 @dataclass(frozen=True)
 class DemoConfig:
-    particle_count: int = 760
+    particle_count: int = 1500
     seed: int = 42
 
     def __post_init__(self) -> None:

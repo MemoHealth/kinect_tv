@@ -19,6 +19,7 @@ Start with pygame-ce/NumPy particles at logical 1280x720; draw size, glow and tr
 
 ## Audio
 
+- MR-01 generates a seamless low-volume rain bed in memory and fades it in over two seconds. Playback is optional when a Windows audio output is unavailable.
 - Short calm water droplets/chimes and a subtle continuous rain bed, **low by default**, with an immediate parent mute option. Never auto-raise system volume.
 - No speech, prompts, jump-scare stingers, sudden loud effects, copyright-sensitive music, mandatory microphone recording or voice recognition.
 - Movement can gently alter volume/pitch/timbre under hard caps; avoid a per-particle sound (sound spam).

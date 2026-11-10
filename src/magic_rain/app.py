@@ -1,6 +1,7 @@
 import numpy as np
 import pygame
 
+from .audio.ambient import AmbientRain
 from .config import DEMO_FPS, SCENE_SIZE, WINDOW_SIZE, DemoConfig
 from .coordinates import Viewport
 from .render.scene import Scene
@@ -19,14 +20,17 @@ def open_display(windowed: bool) -> pygame.Surface:
 
 def run_demo(windowed: bool) -> int:
     sensor = SimulatedSensor()
+    ambient = AmbientRain()
     try:
         pygame.display.init()
+        ambient.start()
         return animate(sensor, windowed)
     except pygame.error as error:
         print(f"Det gick inte att visa regnscenen. {error}")
         return 1
     finally:
         sensor.stop()
+        ambient.stop()
         pygame.display.quit()
 
 

@@ -23,6 +23,9 @@ class Scene:
         base = pygame.surfarray.make_surface(sky.astype(np.uint8))
         self.background = pygame.transform.smoothscale(base, (width, height)).convert()
         self.canvas = self.background.copy()
+        self.glow = pygame.Surface((13, 13), pygame.SRCALPHA)
+        for radius, alpha in ((6, 12), (4, 22), (2, 46)):
+            pygame.draw.circle(self.glow, (*GLOW_COLOR, alpha), (6, 6), radius)
 
     def draw(self, rain: DemoRain) -> pygame.Surface:
         self.canvas.blit(self.background, (0, 0))
@@ -39,6 +42,7 @@ class Scene:
             pygame.draw.aaline(
                 self.canvas, color, (x - 0.045 * slide - 1, y - length), (x, y)
             )
-            if shimmer > 0.55:
-                pygame.draw.circle(self.canvas, color, (round(x), round(y)), 2)
+            if shimmer > 0.15:
+                self.glow.set_alpha(round(190 * shimmer))
+                self.canvas.blit(self.glow, (round(x) - 6, round(y) - 6))
         return self.canvas
