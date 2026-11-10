@@ -22,29 +22,28 @@ def test_settings_round_trip_and_recover_from_corruption(tmp_path):
     assert load_settings(path) == Settings()
 
 
-def test_parent_panel_opens_only_on_shortcut_or_long_escape():
+def test_parent_panel_toggles_and_tilt_requires_an_explicit_direction():
     pygame.font.init()
     try:
         panel = ParentPanel()
         event = pygame.event.Event
         escape = event(pygame.KEYDOWN, key=pygame.K_ESCAPE)
-        panel.event(escape, 1.0)
-        panel.update(2.4)
-        assert not panel.visible
-        panel.update(2.6)
+        panel.event(escape)
         assert panel.visible
-        panel.event(event(pygame.KEYUP, key=pygame.K_ESCAPE), 2.7)
+        panel.event(event(pygame.KEYDOWN, key=pygame.K_ESCAPE, repeat=True))
         assert panel.visible
-        panel.event(event(pygame.KEYDOWN, key=pygame.K_DOWN), 2.8)
+        panel.event(event(pygame.KEYDOWN, key=pygame.K_DOWN))
         left = event(pygame.KEYDOWN, key=pygame.K_LEFT)
-        assert panel.event(left, 2.9) == ("scene", -1)
-        panel.event(escape, 3.0)
+        assert panel.event(left) == ("scene", -1)
+        panel.event(event(pygame.KEYDOWN, key=pygame.K_DOWN))
+        assert panel.event(left) == ("tilt", -1)
+        assert panel.event(event(pygame.KEYDOWN, key=pygame.K_RETURN)) is None
+        down, up = panel.tilt_buttons(ParentPanel.row(panel.selected))
+        assert panel.click(down.center) == ("tilt", -1)
+        assert panel.click(up.center) == ("tilt", 1)
+        panel.event(escape)
         assert not panel.visible
-        panel.event(escape, 3.1)
-        panel.event(event(pygame.WINDOWFOCUSLOST), 3.2)
-        panel.update(5.0)
-        assert not panel.visible
-        panel.event(event(pygame.KEYDOWN, key=pygame.K_F1), 4.0)
+        panel.event(event(pygame.KEYDOWN, key=pygame.K_F1))
         assert panel.visible
         camera_row = next(i for i, (action, _) in enumerate(ROWS) if action == "camera")
         assert panel.click(ParentPanel.row(camera_row).center) == ("camera", 1)

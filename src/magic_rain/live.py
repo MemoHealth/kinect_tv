@@ -19,6 +19,7 @@ class LiveInput:
         self._far = 3800
         self._retry_after: float | None = None
         self.fault = False
+        self.preview_depth: NDArray[np.uint16] | None = None
         self.notice = "Låt ytan framför kameran vara tom en kort stund."
 
     def start(self) -> None:
@@ -51,9 +52,19 @@ class LiveInput:
         if not self.fault:
             self.notice = "Låt ytan framför kameran vara tom en kort stund."
 
-    def mask(self, now: float) -> NDArray[np.bool_]:
+    def tilt(self, direction: int, now: float) -> str:
+        warning = self._capture.request_tilt(direction, now)
+        if not warning:
+            self.calibrate_or_retry(now)
+        return warning
+
+    def tilt_status(self, now: float) -> tuple[int | None, bool, str]:
+        return self._capture.tilt_status(now)
+
+    def mask(self, now: float, *, preview: bool = False) -> NDArray[np.bool_]:
         frame, error = self._capture.take()
         if error is not None:
+            self.preview_depth = None
             self.fault = True
             self.notice = "Kinect svarar inte. Kontrollera USB och ström. F1 för hjälp."
             if self._retry_after is None:
@@ -61,12 +72,23 @@ class LiveInput:
             elif now >= self._retry_after:
                 self.calibrate_or_retry(now)
             return self._empty
+        if self._capture.tilt_status(now)[1]:
+            self.preview_depth = None
+            self.notice = "Kameran justeras."
+            return self._empty
+        if not preview:
+            self.preview_depth = None
+        elif frame is not None:
+            depth = frame.depth_mm
+            self.preview_depth = depth[:, ::-1] if self._mirrored else depth
         if self._tracker is not None:
             return self._tracker.update(frame, now).mask
         if frame is not None:
             self.fault = False
             self._retry_after = None
             self.notice = "Låt ytan framför kameran vara tom en kort stund."
+            if preview:
+                return self._empty
             reference = self._calibration.add(frame)
             if reference is not None:
                 self._tracker = ForegroundTracker(reference, mirrored=self._mirrored)

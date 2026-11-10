@@ -100,7 +100,7 @@ def animate(
                 display = open_display(windowed, screen)
             if panel is None:
                 continue
-            action = panel.event(event, now)
+            action = panel.event(event)
             if (
                 panel.visible
                 and event.type == pygame.MOUSEBUTTONDOWN
@@ -122,6 +122,8 @@ def animate(
             elif name == "camera":
                 sensor.calibrate_or_retry(now)
                 panel.toggle()
+            elif name == "tilt":
+                panel.warning = sensor.tilt(delta, now)
             else:
                 settings = settings.change(name, delta)
                 sensor.configure(settings)
@@ -130,9 +132,8 @@ def animate(
                 ambient.volume(0 if rain.snow else VOLUME[settings.sound])
                 saved = save_settings(path, settings)
                 panel.warning = "" if saved else "Inställningen sparades inte."
-        if panel is not None:
-            panel.update(now)
-        cursor_visible = windowed or (panel is not None and panel.visible)
+        panel_visible = panel is not None and panel.visible
+        cursor_visible = windowed or panel_visible
         if pygame.mouse.get_visible() != cursor_visible:
             pygame.mouse.set_visible(cursor_visible)
 
@@ -151,7 +152,7 @@ def animate(
                     mask = frame.depth_mm == OBSTACLE_DEPTH_MM
                 next_sample_ms = now_ms + 33
         else:
-            mask = sensor.mask(now)
+            mask = sensor.mask(now, preview=panel_visible)
             notice = sensor.notice
 
         warp = FUNHOUSE_STRENGTH.get(settings.scene, 0.0)
@@ -172,8 +173,13 @@ def animate(
                 canvas, (11, 19, 34), rect.inflate(36, 20), border_radius=12
             )
             canvas.blit(caption, rect)
-        panel_visible = panel is not None and panel.visible
         if panel_visible:
-            panel.draw(canvas, settings, sensor.fault)
+            panel.draw(
+                canvas,
+                settings,
+                sensor.fault,
+                sensor.tilt_status(now),
+                sensor.preview_depth,
+            )
         presenter.draw(canvas, display, text=bool(notice) or panel_visible)
         pygame.display.flip()

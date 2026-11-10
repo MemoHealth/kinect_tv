@@ -46,9 +46,12 @@ leave the play area empty while it calibrates. For a window, add `--windowed`.
 The scene then reacts to all visible foreground regions. Physical
 three-person play remains an acceptance check.
 
-F1 or holding Esc opens the Swedish adult panel. Adjust sound, rain
-intensity, mirror and play zone, or recalibrate from that panel. Esc closes
-it. Only preferences are saved in the Windows user's local application data.
+Esc or F1 opens and closes the Swedish adult panel. Choose **Avsluta** to quit.
+Under **Bana**, choose Regn, Snö, or one of the two Lustiga huset effects.
+**Kameravinkel** uses the left/right keys or the −/+ buttons. Use the depth view
+to aim, then leave the play area empty and close the menu to recalibrate.
+Normal play shows the depth silhouettes as soft outlines. Only preferences
+are saved in the Windows user's local application data.
 
 ## Windows launcher and TCL TV
 

@@ -27,6 +27,8 @@ physical observation on the target Kinect and TV.
 - [ ] Child exits -> soft return to calm rain; no failure message.
 - [ ] No scores, labels, gesture icons, tutorials, mandatory poses or achievements.
 - [ ] Adults can open/close simple settings with keyboard; mild/mute options work.
+- [x] Synthetic menu test verified Esc/F1, all four scene choices, both tilt inputs, the depth preview and exiting via Avsluta. A read-only SDK check reported the real camera angle at −17°.
+- [ ] On the mounted Kinect, aim up and down using the adult depth view, close the menu with the play zone empty and verify that three outlines appear after recalibration.
 - [ ] Cable routing safe; Kinect mounted stably; no hazardous movement demands.
 
 ## Fault tolerance and comfort
