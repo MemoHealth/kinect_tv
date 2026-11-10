@@ -41,23 +41,15 @@ class Presenter:
     def __init__(self) -> None:
         self._scaled: pygame.Surface | None = None
 
-    def draw(
-        self, canvas: pygame.Surface, display: pygame.Surface, *, text: bool = False
-    ) -> None:
+    def draw(self, canvas: pygame.Surface, display: pygame.Surface) -> None:
         viewport = Viewport.fit(SCENE_SIZE, display.get_size())
         size = viewport.width, viewport.height
         if size != display.get_size():
             display.fill((0, 0, 0))
         if size != SCENE_SIZE:
-            fractional = size[0] % SCENE_SIZE[0] or size[1] % SCENE_SIZE[1]
-            scale = (
-                pygame.transform.smoothscale
-                if text and fractional
-                else pygame.transform.scale
-            )
             if self._scaled is None or self._scaled.get_size() != size:
-                self._scaled = scale(canvas, size)
+                self._scaled = pygame.transform.smoothscale(canvas, size)
             else:
-                scale(canvas, size, self._scaled)
+                pygame.transform.smoothscale(canvas, size, self._scaled)
             canvas = self._scaled
         display.blit(canvas, (viewport.x, viewport.y))

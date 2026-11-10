@@ -215,5 +215,5 @@ def animate(
                 sensor.tilt_status(now),
                 sensor.preview_depth,
             )
-        presenter.draw(canvas, display, text=bool(notice) or panel_visible)
+        presenter.draw(canvas, display)
         pygame.display.flip()

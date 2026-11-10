@@ -8,6 +8,7 @@
 
 - Fullscreen 16:9 soft dark-blue/purple space with slow atmospheric layered rain, mild depth gradient and discreet luminous water highlights. No UI chrome.
 - Show a soft, continuously visible outline of each depth silhouette, including when a person stands still. Use the same field placement as the weather response. Draw contours only from the depth mask and leave the interior transparent.
+- MR-15 filters the visual outline from subpixel mask coverage and uses smooth presentation scaling. The gameplay mask and collision geometry retain the original sensor resolution.
 - Mirror body movement left/right; child's screen silhouette maps intuitively.
 - Keep center of scene uncluttered; avoid an ever-present fake character.
 
