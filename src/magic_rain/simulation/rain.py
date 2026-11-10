@@ -34,10 +34,24 @@ class DemoRain:
         )
         return self._direction
 
-    def step(self, dt: float, mask: NDArray[np.bool_], field: Viewport) -> None:
+    def step(
+        self,
+        dt: float,
+        mask: NDArray[np.bool_],
+        field: Viewport,
+        wind: NDArray[np.float64] | None = None,
+    ) -> None:
         width, height = SCENE_SIZE
         np.minimum(self.speed + 36 * dt, self._start_speed + 45, out=self.speed)
-        next_x = self.x + (self.drift + self.slide) * dt
+        drift = self.drift.copy()
+        if wind is not None:
+            u = (self.x - field.x) / field.width
+            v = (self.y - field.y) / field.height
+            inside = (0 <= u) & (u < 1) & (0 <= v) & (v < 1)
+            sx = (u[inside] * wind.shape[1]).astype(int)
+            sy = (v[inside] * wind.shape[0]).astype(int)
+            drift[inside] += wind[sy, sx]
+        next_x = self.x + (drift + self.slide) * dt
         next_y = self.y + self.speed * dt
         rows, columns = mask.shape
         directions = self._directions(mask)
@@ -60,6 +74,6 @@ class DemoRain:
         self.shimmer[hits] = 1
         next_y[hits] = self.y[hits] + 18 * dt
 
-        self.x[:] = (self.x + (self.drift + self.slide) * dt) % width
+        self.x[:] = (self.x + (drift + self.slide) * dt) % width
         self.speed[next_y >= height + 20] = self._start_speed[next_y >= height + 20]
         self.y[:] = (next_y + 40) % (height + 60) - 40

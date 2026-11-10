@@ -27,12 +27,12 @@ class Scene:
         for radius, alpha in ((6, 12), (4, 22), (2, 46)):
             pygame.draw.circle(self.glow, (*GLOW_COLOR, alpha), (6, 6), radius)
 
-    def draw(self, rain: DemoRain) -> pygame.Surface:
+    def draw(self, rain: DemoRain, strength: float = 0.0) -> pygame.Surface:
         self.canvas.blit(self.background, (0, 0))
         for index, (x, y, speed, slide, shimmer) in enumerate(
             zip(rain.x, rain.y, rain.speed, rain.slide, rain.shimmer, strict=True)
         ):
-            length = speed * 0.055
+            length = speed * (0.055 + 0.012 * strength)
             color = RAIN_COLORS[index % len(RAIN_COLORS)]
             if shimmer > 0.04:
                 color = tuple(

@@ -40,8 +40,10 @@ On the target PC with Microsoft Kinect SDK 1.8 installed and Kinect connected:
 
 The check reads depth for 60 seconds and prints frame rate, valid depth
 coverage, gaps in the frame counter, and the longest frame interval. Depth
-images stay in memory. Running without arguments checks one real depth frame.
-Live interactive rain and three-person play are covered by later milestones.
+images stay in memory. Launch the live scene with `python -m magic_rain` and
+leave the play area empty while it calibrates. For a window, add `--windowed`.
+The scene then reacts to all visible foreground regions. Physical
+three-person play remains an acceptance check.
 
 ## Start here
 

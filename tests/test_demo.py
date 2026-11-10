@@ -74,13 +74,12 @@ def test_drops_deflect_to_each_side_and_repeat_deterministically():
         DemoConfig(particle_count=0)
 
 
-@pytest.mark.parametrize("args", [[], ["--doctor"]])
-def test_real_modes_report_unavailable_without_simulation(args, capsys, monkeypatch):
+def test_doctor_reports_unavailable_without_simulation(capsys, monkeypatch):
     def no_device(sensor):
         raise SensorError(SensorHealth.NO_DEVICE, "Ingen Kinect hittades.")
 
     monkeypatch.setattr("magic_rain.diagnostics.KinectV1Sensor.start", no_device)
-    assert main(args) == 1
+    assert main(["--doctor"]) == 1
     output = capsys.readouterr()
     assert "NO_DEVICE" in output.err
     assert output.out == ""

@@ -1,9 +1,13 @@
+from time import monotonic
+
 import numpy as np
 import pygame
 
 from .audio.ambient import AmbientRain
 from .config import DEMO_FPS, SCENE_SIZE, WINDOW_SIZE, DemoConfig
 from .coordinates import Viewport
+from .interaction.field import MotionField
+from .live import LiveInput
 from .render.scene import Scene
 from .sensors.simulated import FRAME_SIZE, OBSTACLE_DEPTH_MM, SimulatedSensor
 from .simulation.rain import DemoRain
@@ -19,10 +23,18 @@ def open_display(windowed: bool) -> pygame.Surface:
 
 
 def run_demo(windowed: bool) -> int:
-    sensor = SimulatedSensor()
+    return run_scene(SimulatedSensor(), windowed)
+
+
+def run_live(windowed: bool) -> int:
+    return run_scene(LiveInput(), windowed)
+
+
+def run_scene(sensor: SimulatedSensor | LiveInput, windowed: bool) -> int:
     ambient = AmbientRain()
     try:
         pygame.display.init()
+        pygame.font.init()
         ambient.start()
         return animate(sensor, windowed)
     except pygame.error as error:
@@ -31,18 +43,23 @@ def run_demo(windowed: bool) -> int:
     finally:
         sensor.stop()
         ambient.stop()
+        pygame.font.quit()
         pygame.display.quit()
 
 
-def animate(sensor: SimulatedSensor, windowed: bool) -> int:
+def animate(sensor: SimulatedSensor | LiveInput, windowed: bool) -> int:
     display = open_display(windowed)
-    pygame.display.set_caption("Magic Rain · Simulerad sensor")
+    demo = isinstance(sensor, SimulatedSensor)
+    title = "Magic Rain · Simulerad sensor" if demo else "Magic Rain"
+    pygame.display.set_caption(title)
     pygame.mouse.set_visible(windowed)
     scene = Scene()
     rain = DemoRain(DemoConfig())
     field = Viewport.fit(FRAME_SIZE, SCENE_SIZE)
     mask = np.zeros(FRAME_SIZE[::-1], dtype=np.bool_)
     clock = pygame.time.Clock()
+    motion = MotionField()
+    notice_font = pygame.font.SysFont("segoeui", 25)
     remaining = 0.0
     next_sample_ms = 0
     sensor.start()
@@ -60,24 +77,36 @@ def animate(sensor: SimulatedSensor, windowed: bool) -> int:
                 pygame.mouse.set_visible(windowed)
 
         output = Viewport.fit(SCENE_SIZE, display.get_size())
-        pointer = output.normalized_point(pygame.mouse.get_pos())
-        sensor.pointer = None
-        if pygame.mouse.get_pressed()[0] and pointer is not None:
-            logical = (pointer[0] * SCENE_SIZE[0], pointer[1] * SCENE_SIZE[1])
-            sensor.pointer = field.normalized_point(logical)
-
-        now_ms = pygame.time.get_ticks()
-        if now_ms >= next_sample_ms:
-            frame = sensor.read_latest(timeout_s=0)
-            if frame is not None:
-                mask = frame.depth_mm == OBSTACLE_DEPTH_MM
-            next_sample_ms = now_ms + 33
+        notice = ""
+        if isinstance(sensor, SimulatedSensor):
+            pointer = output.normalized_point(pygame.mouse.get_pos())
+            sensor.pointer = None
+            if pygame.mouse.get_pressed()[0] and pointer is not None:
+                logical = (pointer[0] * SCENE_SIZE[0], pointer[1] * SCENE_SIZE[1])
+                sensor.pointer = field.normalized_point(logical)
+            now_ms = pygame.time.get_ticks()
+            if now_ms >= next_sample_ms:
+                frame = sensor.read_latest(timeout_s=0)
+                if frame is not None:
+                    mask = frame.depth_mm == OBSTACLE_DEPTH_MM
+                next_sample_ms = now_ms + 33
+        else:
+            mask = sensor.mask(monotonic())
+            notice = sensor.notice
 
         while remaining >= STEP:
-            rain.step(STEP, mask, field)
+            motion.update(mask, STEP)
+            rain.step(STEP, mask, field, motion.wind)
             remaining -= STEP
 
-        canvas = scene.draw(rain)
+        canvas = scene.draw(rain, motion.strength)
+        if notice:
+            caption = notice_font.render(notice, True, (199, 216, 230))
+            rect = caption.get_rect(center=(SCENE_SIZE[0] // 2, SCENE_SIZE[1] - 65))
+            pygame.draw.rect(
+                canvas, (11, 19, 34), rect.inflate(36, 20), border_radius=12
+            )
+            canvas.blit(caption, rect)
         display.fill((0, 0, 0))
         if (output.width, output.height) != SCENE_SIZE:
             canvas = pygame.transform.scale(canvas, (output.width, output.height))

@@ -31,6 +31,7 @@ Tier A includes two **pose-like qualities** measurable without a skeleton: relat
 
 - In the first live version, interaction is **continuous physical cause and effect**: body as obstacle, arm as moving deflector, motion as gentle wind. No pose recognition must be necessary for visible action.
 - Attract mode has raindrops even when no one is present. First detected foreground visibly bends a **local** stream immediately and remains calm for an idle child. A positive response must not depend on jumping, clapping or hitting an invisible target.
+- MR-04 captures depth on a worker with one replaceable frame. The display starts with ambient rain while the adult clears the camera view for the in-memory reference. The notice disappears when calibration completes. Occupancy changes drive local wind and a gradual reach/spread response.
 - Real body-to-screen latency must be measured; when the sensor loses confidence, the world gently returns to ambient rain instead of producing imaginary gestures.
 - The child must never have to come close enough to touch the TV. The parent chooses a safe operating zone; no splash effect should encourage collisions with furniture or the display.
 
