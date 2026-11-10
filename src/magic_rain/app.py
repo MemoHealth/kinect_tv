@@ -10,12 +10,14 @@ from .interaction.field import MotionField
 from .interaction.funhouse import Funhouse
 from .live import LiveInput
 from .render.bowl import draw_bowl
+from .render.lightpaint import LightPaint
 from .render.outline import Outline
 from .render.output import Presenter, open_display
 from .render.scene import Scene
 from .sensors.simulated import FRAME_SIZE, OBSTACLE_DEPTH_MM, SimulatedSensor
 from .settings import (
     FUNHOUSE_STRENGTH,
+    PAINT_SCENE,
     Settings,
     load_settings,
     save_settings,
@@ -73,6 +75,7 @@ def animate(
     field = Viewport.fit(FRAME_SIZE, SCENE_SIZE)
     mask = np.zeros(FRAME_SIZE[::-1], dtype=np.bool_)
     outline = Outline(field, mask.shape)
+    lightpaint = LightPaint(field, mask.shape)
     clock = pygame.time.Clock()
     motion = MotionField()
     mirrors = Funhouse()
@@ -133,6 +136,7 @@ def animate(
                 if name == "scene":
                     rain = DemoRain(DemoConfig(), snow=settings.scene != "Regn")
                     bowl = Bowl()
+                    lightpaint.clear()
                 ambient.volume(0 if rain.snow else VOLUME[settings.sound])
                 saved = save_settings(path, settings)
                 panel.warning = "" if saved else "Inställningen sparades inte."
@@ -161,15 +165,27 @@ def animate(
 
         warp = FUNHOUSE_STRENGTH.get(settings.scene, 0.0)
         vessel = bowl if settings.scene in ("Regn", "Snö") else None
+        painting = settings.scene == PAINT_SCENE
         visible_mask = mirrors.warp(mask, warp)
         while remaining >= STEP:
-            motion.update(visible_mask, STEP)
-            rain.step(STEP, visible_mask, field, motion.wind, bowl=vessel)
+            if painting:
+                lightpaint.update(mask, STEP)
+            else:
+                motion.update(visible_mask, STEP)
+                rain.step(STEP, visible_mask, field, motion.wind, bowl=vessel)
             remaining -= STEP
 
-        canvas = scene.draw(
-            rain, motion.strength, INTENSITY[settings.intensity], funhouse=bool(warp)
-        )
+        if painting:
+            canvas = scene.canvas
+            canvas.fill((5, 8, 21))
+            lightpaint.draw(canvas)
+        else:
+            canvas = scene.draw(
+                rain,
+                motion.strength,
+                INTENSITY[settings.intensity],
+                funhouse=bool(warp),
+            )
         if vessel is not None:
             draw_bowl(canvas, vessel, snow=rain.snow)
         outline.draw(canvas, visible_mask, dt)

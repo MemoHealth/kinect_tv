@@ -5,9 +5,10 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 
 FUNHOUSE_STRENGTH = {"Lustiga huset · Konvex": -0.37, "Lustiga huset · Konkav": 0.44}
+PAINT_SCENE = "Ljusmåleri"
 
 OPTIONS = {
-    "scene": ("Regn", "Snö", *FUNHOUSE_STRENGTH),
+    "scene": ("Regn", "Snö", *FUNHOUSE_STRENGTH, PAINT_SCENE),
     "sound": ("Av", "Lågt", "Normal"),
     "intensity": ("Milt", "Normalt", "Livligt"),
     "mirror": ("På", "Av"),
