@@ -18,6 +18,8 @@ RESOLUTION_320X240 = 1
 NO_FRAME = 0x83010001
 DISCONNECTED = {0x83010014, 0x83010015, 0x8301027F, 0x8007048F}
 LOAD_LIBRARY_SEARCH_SYSTEM32 = 0x800
+TILT_MIN = -27
+TILT_MAX = 27
 
 
 class SensorError(RuntimeError):
@@ -67,6 +69,8 @@ def _load_runtime():
             win.HANDLE, win.DWORD, ct.POINTER(ct.POINTER(_ImageFrame))
         ]
         dll.NuiImageStreamReleaseFrame.argtypes = [win.HANDLE, ct.POINTER(_ImageFrame)]
+        dll.NuiCameraElevationGetAngle.argtypes = [ct.POINTER(win.LONG)]
+        dll.NuiCameraElevationSetAngle.argtypes = [win.LONG]
     except (OSError, AttributeError) as error:
         raise SensorError(
             SensorHealth.DRIVER_ERROR, "Kinect SDK 1.8 kunde inte laddas."
@@ -186,6 +190,21 @@ class KinectV1Sensor:
 
     def health(self) -> SensorHealth:
         return self._health
+
+    def tilt_angle(self) -> int:
+        if self._dll is None:
+            raise SensorError(SensorHealth.NO_DEVICE, "Kinect är frånkopplad.")
+        angle = win.LONG()
+        result = self._dll.NuiCameraElevationGetAngle(ct.byref(angle))
+        _check("NuiCameraElevationGetAngle", result)
+        return angle.value
+
+    def tilt_to(self, angle: int) -> None:
+        if self._dll is None:
+            raise SensorError(SensorHealth.NO_DEVICE, "Kinect är frånkopplad.")
+        bounded = min(TILT_MAX, max(TILT_MIN, angle))
+        result = self._dll.NuiCameraElevationSetAngle(bounded)
+        _check("NuiCameraElevationSetAngle", result)
 
     def stop(self) -> None:
         if self._dll is not None:

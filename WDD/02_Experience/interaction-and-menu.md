@@ -41,7 +41,7 @@ Multiple foreground shapes influence the same rain naturally. No player IDs, mar
 
 ## Parent menu
 
-- Hidden in normal play. `F1` or hold `Esc` >=1.5 s opens an adult panel; `Esc` closes it. Mouse allowed for parent. Prevent accidental entry from child's tracked movement.
+- Hidden in normal play. `F1` or `Esc` opens or closes the adult panel. The panel has actions for leaving play, switching scenes and tilting Kinect with the left/right arrows or the two angle buttons. No tracked movement opens it.
 - Clear, simple **Swedish** text for adults, at most one screen, no nested submenu maze. Suggested layout:
 
 ```text
@@ -62,6 +62,7 @@ Multiple foreground shapes influence the same rain naturally. No player IDs, mar
 - A `--doctor` screen may show technical details, but never during child play.
 - On next launch, start attract mode automatically; **no Start button** after one-time setup. The word 'Fortsätt leka' in the parent menu is permitted.
 - The panel offers presets for volume, intensity, mirror, horizontal zone, and distance. Only these settings go into the Windows user's local application data. The empty-room reference stays in memory and refreshes at startup and after reconnection.
+- The camera view is depth-only and exists only while the adult panel is open. Tilt moves in 5° steps within the SDK range. Commands run on the capture worker with a cooldown. Calibration pauses in the menu after a move and resumes once the adult closes it with the play area empty.
 - No gestures are used to navigate the menu. Adults use keyboard/mouse.
 
 ## First-run calibration

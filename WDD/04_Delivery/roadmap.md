@@ -28,7 +28,7 @@ Do **not** assign phase completion before proof. Suggested names (`MR-xx`) are l
 
 ## MR-05 — Parent menu / first-time setup / resilience
 
-**Goal:** single Swedish parent menu, F1 / long Esc, persisted settings, calibration/retry, sensor error UX, mute/mild controls. **Gate:** repeat launch needs no start click, disconnect produces calm truthful message, menu remains hidden to child, config recovery works. **Requirements:** MR-UX-01, 05, MR-SYS-02, 03. **Dependency:** MR-04.
+**Goal:** single Swedish parent menu, keyboard access, persisted settings, calibration/retry, sensor error UX, mute/mild controls. **Gate:** repeat launch needs no start click, disconnect produces calm truthful message, menu remains hidden to child, config recovery works. **Requirements:** MR-UX-01, 05, MR-SYS-02, 03. **Dependency:** MR-04.
 
 ## MR-06 — Polish, packaging and real-world test
 
@@ -43,6 +43,13 @@ Record its actual signal mode and test three visible people together.
 **Only open after:** depth-only core feels excellent and real RGB+depth benchmark is sufficiently stable. Implement opt-in pose capability, confidence gate and fallbacks. First pose spell: two hands close creates a softly glowing ball, never mandatory for interaction. **Gate:** observed stability on children and no degradation of baseline latency. **Dependency:** MR-06. **Do not start by default.**
 
 ## Priority / critical path
+
+### User-requested scene and camera updates
+
+- MR-08 adds outlines for visible players.
+- MR-09 adds the Snö weather scene and persistent scene selection.
+- MR-10 adds two Lustiga huset variants with warped depth silhouettes.
+- MR-11 adds direct Esc/F1 menu access, manual camera tilt and depth preview.
 
 **After MR-00, prioritize MR-02 (real sensor) when the owner has the Kinect and adapter available.** Confirm the hardware before investing in elaborate particles. If hardware cannot be tested yet, MR-01 may progress with simulation, but do not mark a hardware-dependent feature as done.
 

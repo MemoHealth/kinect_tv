@@ -14,6 +14,12 @@ Run **depth-only** to reduce USB load and limit camera data to what the experien
 
 Kinect v1 sensor; model and USB identity checked before driver changes. Proper power adapter + USB adapter (some Xbox 360 configurations have proprietary connector/power); a stable shelf below/above TV; laptop with an available USB port, adult keyboard and HDMI. Adult must approve any admin/driver installation.
 
+MR-11 reads and sets the camera angle through the installed SDK on the
+capture worker. An explicit adult action requests a 5° step. Requests are
+bounded to ±27°, separated by at least 2.5 seconds and paused for 20 seconds
+after 12 attempts. Camera motion invalidates the empty-room reference.
+See the [Microsoft SDK interface](https://learn.microsoft.com/en-us/previous-versions/windows/kinect-1.8/hh855326(v=ieb.10)).
+
 ## Verification gate (ISSUE MR-02)
 
 1. Check device identity and USB devices; do **not** install a driver on an unrelated USB device.
