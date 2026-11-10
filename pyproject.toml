@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools==80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "magic-rain"
+version = "0.1.0"
+description = "A simulated interactive rain installation"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["numpy==2.2.6", "pygame-ce==2.5.6"]
+
+[project.optional-dependencies]
+dev = ["pytest==8.4.2", "ruff==0.14.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py311"
+extend-exclude = [".local"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]

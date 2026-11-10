@@ -1,0 +1,27 @@
+# Python / caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+build/
+dist/
+*.egg-info/
+# Local settings / diagnostics
+config.local.toml
+.local/
+logs/
+out/
+reports/local/
+# Raw camera, audio, user captures: never commit
+captures/
+recordings/
+*.raw
+*.ply
+*.wav
+# IDE / system
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
