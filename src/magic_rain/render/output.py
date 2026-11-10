@@ -1,7 +1,17 @@
+import os
+import sys
+
 import pygame
 
 from ..config import SCENE_SIZE, WINDOW_SIZE
 from ..coordinates import Viewport
+
+
+def init_display() -> None:
+    if sys.platform == "win32":
+        os.environ.setdefault("SDL_WINDOWS_DPI_AWARENESS", "permonitorv2")
+        os.environ.setdefault("SDL_RENDER_SCALE_QUALITY", "linear")
+    pygame.display.init()
 
 
 def select_display(sizes: list[tuple[int, int]], requested: int | None) -> int:
@@ -21,12 +31,19 @@ def open_display(windowed: bool, requested: int | None) -> pygame.Surface:
     display = select_display(sizes, requested)
     if windowed:
         return pygame.display.set_mode(WINDOW_SIZE, pygame.RESIZABLE, display=display)
+    if sizes[display] == (3840, 2160) and pygame.display.get_driver() == "windows":
+        try:
+            return pygame.display.set_mode(
+                SCENE_SIZE, pygame.FULLSCREEN | pygame.SCALED, display=display
+            )
+        except pygame.error:
+            pass
     return pygame.display.set_mode(sizes[display], pygame.FULLSCREEN, display=display)
 
 
 def list_displays() -> int:
     try:
-        pygame.display.init()
+        init_display()
         for index, (width, height) in enumerate(pygame.display.get_desktop_sizes(), 1):
             print(f"Bildskärm {index}: {width} × {height}")
         return 0
