@@ -9,6 +9,7 @@ physical observation on the target Kinect and TV.
 - [x] The target PC sees Kinect v1 camera `045E:02AE` after the owner installed Microsoft Kinect SDK 1.8 (1.8.0.595). Any later driver change requires approval and a rollback record.
 - [x] Local `--doctor` test on 2026-11-10 received 1,798 depth-only frames at 320 × 240 in 60.0 s (29.9 FPS). Two frame numbers were skipped, the longest interval was 94 ms, and 19.3% of depth pixels had valid values in the current view.
 - [x] A separate single-frame check reopened the SDK stream after the 60 s test.
+- [x] After the owner physically reconnected USB, Windows showed the camera as started. A new SDK session read 129 real depth frames in five seconds with advancing timestamps and valid depth.
 - [x] A local six-second run of the live scene completed calibration and rendered 356 frames using a virtual display on the target PC.
 - [ ] Verify physical USB disconnect and reconnect during capture.
 - [ ] Measure depth coverage in the actual play zone and motion-to-screen latency.
@@ -43,3 +44,4 @@ physical observation on the target Kinect and TV.
 - [ ] If unsuccessful, tune natural visual response first rather than adding instructions.
 
 **Date / PC / Kinect model / screen / observed issues:**
+- [x] In a virtual-display test, an injected SDK disconnect error brought up the camera fault state. Automatic retry then reopened the real Kinect, recalibrated and returned to play.
