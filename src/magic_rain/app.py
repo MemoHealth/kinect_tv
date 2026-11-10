@@ -8,6 +8,7 @@ from .config import DEMO_FPS, SCENE_SIZE, DemoConfig
 from .coordinates import Viewport
 from .interaction.field import MotionField
 from .live import LiveInput
+from .render.outline import Outline
 from .render.output import Presenter, open_display
 from .render.scene import Scene
 from .sensors.simulated import FRAME_SIZE, OBSTACLE_DEPTH_MM, SimulatedSensor
@@ -63,6 +64,7 @@ def animate(
     rain = DemoRain(DemoConfig())
     field = Viewport.fit(FRAME_SIZE, SCENE_SIZE)
     mask = np.zeros(FRAME_SIZE[::-1], dtype=np.bool_)
+    outline = Outline(field, mask.shape)
     clock = pygame.time.Clock()
     motion = MotionField()
     notice_font = pygame.font.SysFont("segoeui", 25)
@@ -77,7 +79,8 @@ def animate(
     sensor.start()
 
     while True:
-        remaining += min(clock.tick(DEMO_FPS) / 1000, 0.05)
+        dt = min(clock.tick(DEMO_FPS) / 1000, 0.05)
+        remaining += dt
         now = monotonic()
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (
@@ -147,6 +150,7 @@ def animate(
             remaining -= STEP
 
         canvas = scene.draw(rain, motion.strength, INTENSITY[settings.intensity])
+        outline.draw(canvas, mask, dt)
         if notice:
             caption = notice_font.render(notice, True, (199, 216, 230))
             rect = caption.get_rect(center=(SCENE_SIZE[0] // 2, SCENE_SIZE[1] - 65))

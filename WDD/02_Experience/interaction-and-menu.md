@@ -7,7 +7,7 @@
 ## Visual composition
 
 - Fullscreen 16:9 soft dark-blue/purple space with slow atmospheric layered rain, mild depth gradient and discreet luminous water highlights. No UI chrome.
-- Show an **artistic, translucent outline/soft ripple** at the child silhouette only when touched by droplets or motion; avoid a webcam-like child video by default. This protects privacy and focuses attention on magic.
+- Show a soft, continuously visible outline of each depth silhouette, including when a person stands still. Use the same field placement as the weather response. Draw contours only from the depth mask and leave the interior transparent.
 - Mirror body movement left/right; child's screen silhouette maps intuitively.
 - Keep center of scene uncluttered; avoid an ever-present fake character.
 
