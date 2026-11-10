@@ -53,11 +53,20 @@ The level rises inside your silhouette until it spills over the lower arm.
 Opening your arms releases it. In Ljusmåleri, movement leaves rainbow trails
 that slowly fade.
 Lustiga huset displays a live color reflection locally. Choose it again each
-session to activate the color camera.
-**Kameravinkel** uses the left/right keys or the −/+ buttons. Use the depth view
-to aim, then leave the play area empty and close the menu to recalibrate.
-Normal play shows the depth silhouettes as soft outlines. Only preferences
-are saved in the Windows user's local application data.
+session to display the reflection.
+**Kameravinkel** uses the left/right keys or the −/+ buttons. Aim with the live
+view in the menu, choose **Kalibrera kameran**, then step aside during the
+three-second countdown. Keep the area empty until the menu reads
+**Kalibrering klar**. Step back in and check that your teal silhouette fits.
+Amber marks the edge it reaches. **Spelzon → Bred** uses the full depth image.
+
+**Färgstöd** is on by default. It uses registered color to help fill small
+gaps next to the depth silhouette. The menu shows when depth and color are
+available. The depth tracker also recognizes a player standing against a
+distant background that gave no depth during calibration. Parts outside the
+camera view still require a different angle or more room. Camera frames stay
+in memory. Only preferences are saved in the Windows user's local application
+data.
 
 ## Windows launcher and TCL TV
 

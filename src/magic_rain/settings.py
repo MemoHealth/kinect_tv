@@ -14,6 +14,7 @@ OPTIONS = {
     "mirror": ("På", "Av"),
     "zone": ("Bred", "Centrerad"),
     "distance": ("Normalt", "Nära"),
+    "color_assist": ("På", "Av"),
 }
 
 
@@ -25,6 +26,7 @@ class Settings:
     mirror: str = "På"
     zone: str = "Bred"
     distance: str = "Normalt"
+    color_assist: str = "På"
 
     def change(self, key: str, delta: int) -> "Settings":
         values = OPTIONS[key]

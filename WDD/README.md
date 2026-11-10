@@ -28,6 +28,7 @@ WDD means **Working Design Document**: living, version-controlled decisions used
 - [`03_Quality/privacy-and-safety.md`](03_Quality/privacy-and-safety.md): offline operation and child safety.
 - [`03_Quality/risks.md`](03_Quality/risks.md): risk register and mitigations.
 - [`04_Delivery/roadmap.md`](04_Delivery/roadmap.md): issue-sized phases and dependencies.
+- [`04_Delivery/worlds-feasibility.md`](04_Delivery/worlds-feasibility.md): proposed worlds, source and license review, and build gates.
 - [`04_Delivery/change-protocol.md`](04_Delivery/change-protocol.md): workflow and traceability.
 - [`ADR/0001-depth-first-modular-python.md`](ADR/0001-depth-first-modular-python.md): key architecture decision.
 

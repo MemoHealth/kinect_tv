@@ -128,19 +128,19 @@ def animate(
             if name == "continue":
                 panel.toggle()
             elif name == "camera":
-                sensor.calibrate_or_retry(now)
-                panel.toggle()
+                sensor.calibrate_or_retry(now, from_menu=True)
             elif name == "tilt":
                 panel.warning = sensor.tilt(delta, now)
             else:
                 settings = settings.change(name, delta)
                 sensor.configure(settings)
+                if name == "color_assist" and settings.color_assist == "På":
+                    sensor.calibrate_or_retry(now, from_menu=True)
                 if name == "scene":
                     rain = DemoRain(DemoConfig(), snow=settings.scene != "Regn")
                     arm_water = ArmWater()
                     lightpaint.clear()
                     use_color = settings.scene in FUNHOUSE_STRENGTH
-                    sensor.set_color(use_color)
                     color_mirror = ColorMirror(field, mask.shape) if use_color else None
                 ambient.volume(0 if rain.snow else VOLUME[settings.sound])
                 saved = save_settings(path, settings)
@@ -216,6 +216,9 @@ def animate(
                 sensor.fault,
                 sensor.tilt_status(now),
                 sensor.preview_depth,
+                mask,
+                sensor.calibration_status(now),
+                sensor.color_status(now),
             )
         presenter.draw(canvas, display)
         pygame.display.flip()

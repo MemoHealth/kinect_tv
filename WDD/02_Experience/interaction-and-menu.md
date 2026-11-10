@@ -7,7 +7,7 @@
 ## Visual composition
 
 - Fullscreen 16:9 soft dark-blue/purple space with slow atmospheric layered rain, mild depth gradient and discreet luminous water highlights. No UI chrome.
-- Show a soft, continuously visible outline of each depth silhouette, including when a person stands still. Use the same field placement as the weather response. Draw contours only from the depth mask and leave the interior transparent.
+- Show a soft, continuously visible outline of each silhouette, including when a person stands still. Use the same field placement as the weather response and leave the interior transparent.
 - MR-15 filters the visual outline from subpixel mask coverage and uses smooth presentation scaling. The gameplay mask and collision geometry retain the original sensor resolution.
 - Windows display selection uses physical pixels under per-monitor DPI awareness. A 4K TV remains selectable when Windows scales its desktop UI.
 - Mirror body movement left/right; child's screen silhouette maps intuitively.
@@ -64,12 +64,13 @@ Multiple foreground shapes influence the same rain naturally. No player IDs, mar
 - A `--doctor` screen may show technical details, but never during child play.
 - On next launch, start attract mode automatically; **no Start button** after one-time setup. The word 'Fortsätt leka' in the parent menu is permitted.
 - The panel offers presets for volume, intensity, mirror, horizontal zone, and distance. Only these settings go into the Windows user's local application data. The empty-room reference stays in memory and refreshes at startup and after reconnection.
-- The camera view is depth-only and exists only while the adult panel is open. Tilt moves in 5° steps within the SDK range. Commands run on the capture worker with a cooldown. Calibration pauses in the menu after a move and resumes once the adult closes it with the play area empty.
+- The adult panel shows depth, the current silhouette and the playable frame. An amber edge indicates where the silhouette reaches the frame. Tilt moves in 5° steps within the SDK range with a cooldown. After aiming, the adult can select calibration and step aside during a countdown while the panel stays open.
+- Color assistance defaults to on. The menu shows whether registration is active, and the adult can disable it. Only the funhouse lens displays the actual color image.
 - No gestures are used to navigate the menu. Adults use keyboard/mouse.
 
 ## First-run calibration
 
-Adult-only small guide when needed. One screen at a time: 'Kontrollera kameran' / 'Låt ytan framför kameran vara tom en kort stund' / 'Klart'. Large readable type. Automatic zone estimation after empty-room reference; provide retry and near/far adjustments if necessary. Save non-personal calibration numbers locally. Don't show this wizard on every launch.
+The camera calibrates with an empty play area at startup. For manual setup, the adult panel shows the countdown, progress and completion. The depth and color references stay in memory and are refreshed after camera movement.
 
 ## Failure UX
 

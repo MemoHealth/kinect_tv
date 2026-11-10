@@ -8,7 +8,7 @@
 | MR-UX-02 | No child HUD or gesture instructions | S + H: normal-play screenshot has no text, score, icon, button or skeleton diagram |
 | MR-UX-03 | Natural entry/exit | S + H: movement enters play automatically and returns gradually on exit; no child action needed |
 | MR-UX-04 | Mirror mapping | H: moving right hand to child's right corresponds to same-side visual movement in mirror perspective; tested explicitly |
-| MR-UX-05 | Calm parent menu | S + H: F1 and Esc open or close the menu. The adult can exit, choose a scene and aim Kinect using depth preview. Settings persist and support keyboard and mouse. No child gesture opens the panel. |
+| MR-UX-05 | Calm parent menu | S + H: F1 and Esc open or close the menu. The adult can exit, choose a scene, aim Kinect with a live preview and calibrate in the open menu. The preview marks when foreground reaches a play-zone boundary. Settings persist and support keyboard and mouse. No child gesture opens the panel. |
 | MR-UX-06 | Readability-independent | C: 2+ trial participants of differing age/height can discover visible influence without explanation; note observed exceptions (not assumed pass) |
 | MR-CV-01 | Real depth sensor | H: authentic Kinect v1 stream with confirmed units, timestamps, stable capture and reconnect behavior |
 | MR-CV-02 | Depth-only baseline | A + S + H: play works with RGB=None and poses disabled |

@@ -36,7 +36,9 @@ def test_mirror_renders_the_live_colors_with_optional_horizontal_flip():
     assert canvas.get_at((3, 10))[:3] == (200, 20, 50)
 
 
-def test_color_is_opt_in_each_session_and_cleared_on_scene_exit(tmp_path, monkeypatch):
+def test_color_mirror_selection_is_session_only_and_color_can_calibrate(
+    tmp_path, monkeypatch
+):
     path = tmp_path / "settings.json"
     scene = next(iter(FUNHOUSE_STRENGTH))
     path.write_text(f'{{"version":1,"scene":"{scene}"}}', encoding="utf-8")
@@ -54,7 +56,7 @@ def test_color_is_opt_in_each_session_and_cleared_on_scene_exit(tmp_path, monkey
     live._color_enabled = True
     live.mask(1.0)
     assert live.color_image is rgb
-    assert len(live._calibration._samples) == 1
+    assert len(live._calibration._samples) == 2
     live.mask(1.3)
     assert live.color_image is None
     live.mask(1.0)

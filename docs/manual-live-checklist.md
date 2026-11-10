@@ -26,13 +26,16 @@ physical observation on the target Kinect and TV.
 - [ ] Three people can affect the rain at the same time when in view. Check partial overlap and verify that the rain still responds to the visible silhouettes.
 - [ ] Hold both arms to form a cup. Verify water and snow rise inside the shape, overflow at the lower arm and fall when the arms open.
 - [ ] Select Ljusmåleri and check that movements from three people leave visible fading rainbow trails.
-- [ ] Select each Lustiga huset lens on a free Kinect and verify the live color reflection. Leave the scene and verify depth-only play resumes.
+- [ ] Select each Lustiga huset lens and verify the live color reflection. Leave the scene and verify silhouette play resumes.
 - [x] Local hardware smoke test received 300 depth frames and 295 nonempty color frames in 10 s. An integrated virtual-display run rendered 45 frames of the real color mirror and cleared the color image on return to depth-only play. No images were saved.
 - [ ] Child exits -> soft return to calm rain; no failure message.
 - [ ] No scores, labels, gesture icons, tutorials, mandatory poses or achievements.
 - [ ] Adults can open/close simple settings with keyboard; mild/mute options work.
 - [x] Synthetic menu test verified Esc/F1, all four scene choices, both tilt inputs, the depth preview and exiting via Avsluta. A read-only SDK check reported the real camera angle at −17°.
-- [ ] On the mounted Kinect, aim up and down using the adult depth view, close the menu with the play zone empty and verify that three outlines appear after recalibration.
+- [ ] On the mounted Kinect, aim up and down using the menu preview. Select **Kalibrera kameran**, step out of view and wait for **Kalibrering klar**. Return and confirm head, hands and feet fit inside the frame. Move to an edge and verify the correct amber marker. Repeat with three people.
+- [ ] Compare **Färgstöd** on and off with a player safely inside the frame. Check that small gaps improve without leaving false contours, and that movement still feels responsive.
+- [ ] Calibrate with a distant area that appears black in the empty-room preview. When a player enters that area at normal play distance, check that the silhouette follows the measured body continuously across the dark background and the measured floor.
+- [x] Local Kinect SDK test received 295 depth frames in 10 s. It mapped 259 synchronized color/depth pairs and captured a color calibration reference in memory. No images were saved.
 - [ ] Cable routing safe; Kinect mounted stably; no hazardous movement demands.
 
 ## Fault tolerance and comfort

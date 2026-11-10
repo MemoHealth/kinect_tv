@@ -14,6 +14,7 @@ ROWS = (
     ("mirror", "Spegelbild"),
     ("zone", "Spelzon"),
     ("distance", "Spelavstånd"),
+    ("color_assist", "Färgstöd"),
     ("camera", "Kalibrera kameran"),
     ("quit", "Avsluta"),
 )
@@ -26,6 +27,7 @@ class ParentPanel:
         self.selected = 0
         self.warning = ""
         self._preview_source: NDArray[np.uint16] | None = None
+        self._preview_mask: NDArray[np.bool_] | None = None
         self._preview_surface: pygame.Surface | None = None
         self._title = pygame.font.SysFont("segoeui", 31, bold=True)
         self._text = pygame.font.SysFont("segoeui", 23)
@@ -35,7 +37,7 @@ class ParentPanel:
 
     @staticmethod
     def row(index: int) -> pygame.Rect:
-        return pygame.Rect(PANEL.x + 28, PANEL.y + 94 + index * 44, 510, 38)
+        return pygame.Rect(PANEL.x + 28, PANEL.y + 94 + index * 41, 510, 38)
 
     @staticmethod
     def tilt_buttons(row: pygame.Rect) -> tuple[pygame.Rect, pygame.Rect]:
@@ -49,6 +51,7 @@ class ParentPanel:
         self.selected = 0
         if not self.visible:
             self._preview_source = None
+            self._preview_mask = None
             self._preview_surface = None
 
     def event(self, event: pygame.event.Event) -> tuple[str, int] | None:
@@ -100,6 +103,9 @@ class ParentPanel:
         camera_fault: bool,
         tilt_status: tuple[int | None, bool, str],
         depth: NDArray[np.uint16] | None,
+        mask: NDArray[np.bool_] | None = None,
+        calibration: str = "",
+        color_status: str = "",
     ) -> None:
         angle, moving, tilt_warning = tilt_status
         canvas.blit(self._shade, (0, 0))
@@ -129,7 +135,7 @@ class ParentPanel:
         hint = self.warning or tilt_warning or default_hint
         footer = self._small.render(hint, True, (161, 185, 204))
         canvas.blit(footer, (PANEL.x + 31, PANEL.bottom - 39))
-        self._draw_depth(canvas, depth)
+        self._draw_depth(canvas, depth, mask, settings, (calibration, color_status))
 
     def _draw_tilt(
         self, canvas: pygame.Surface, row: pygame.Rect, angle: int | None, moving: bool
@@ -144,26 +150,65 @@ class ParentPanel:
         canvas.blit(text, text.get_rect(center=(row.right - 78, row.centery)))
 
     def _draw_depth(
-        self, canvas: pygame.Surface, depth: NDArray[np.uint16] | None
+        self, canvas: pygame.Surface, depth: NDArray[np.uint16] | None,
+        mask: NDArray[np.bool_] | None, settings: Settings, status: tuple[str, str],
     ) -> None:
         x, y = PANEL.x + 565, PANEL.y + 94
         view = pygame.Rect(x, y + 32, 256, 192)
-        canvas.blit(self._text.render("Djupvy", True, (226, 239, 247)), (x, y))
+        label = self._text.render("Spelzon i kameran", True, (226, 239, 247))
+        canvas.blit(label, (x, y))
         pygame.draw.rect(canvas, (5, 15, 26), view)
-        if depth is not self._preview_source:
+        if depth is not self._preview_source or mask is not self._preview_mask:
             self._preview_source = depth
+            self._preview_mask = mask
             self._preview_surface = None
             if depth is not None:
                 level = np.where(depth != 0, np.clip((4000.0 - depth) / 18, 0, 170), 0)
                 colors = np.stack((level * 0.65, level * 0.93, level), axis=2)
+                if mask is not None:
+                    colors[mask] = (56, 196, 188)
                 rgb = colors.swapaxes(0, 1).astype(np.uint8)
                 image = pygame.surfarray.make_surface(rgb)
                 self._preview_surface = pygame.transform.scale(image, view.size)
         if self._preview_surface is not None:
             canvas.blit(self._preview_surface, view)
-        for index, line in enumerate((
-            "Ljust är nära.",
-            "Töm spelzonen innan du fortsätter.",
-        )):
-            label = self._small.render(line, True, (161, 185, 204))
+        margin = 0.12 if settings.zone == "Centrerad" else 0.0
+        inset = round(view.width * margin)
+        zone = view.inflate(-2 * inset, 0)
+        pygame.draw.rect(canvas, (108, 151, 172), zone, 1)
+        cut = False
+        if depth is not None and mask is not None:
+            cut = self._draw_clipped_edges(canvas, zone, mask, margin)
+        framing = "Konturen når kanten" if cut else "Hela kroppen ska rymmas."
+        adjustment = "Backa eller justera vinkeln." if cut else "Justera med − och +."
+        muted = (161, 185, 204)
+        lines = (
+            (status[0], (141, 217, 216)),
+            (status[1], muted),
+            (framing, (237, 182, 113) if cut else muted),
+            (adjustment, muted),
+            ("Töm ytan när du kalibrerar.", muted),
+        )
+        for index, (line, color) in enumerate(lines):
+            label = self._small.render(line, True, color)
             canvas.blit(label, (x, view.bottom + 13 + index * 24))
+
+    @staticmethod
+    def _draw_clipped_edges(
+        canvas: pygame.Surface, zone: pygame.Rect,
+        mask: NDArray[np.bool_], margin: float,
+    ) -> bool:
+        border = round(mask.shape[1] * margin)
+        active = mask[:, border:mask.shape[1] - border]
+        edges = (
+            (active[:3, :], zone.topleft, zone.topright),
+            (active[-3:, :], zone.bottomleft, zone.bottomright),
+            (active[:, :3], zone.topleft, zone.bottomleft),
+            (active[:, -3:], zone.topright, zone.bottomright),
+        )
+        cut = False
+        for region, start, end in edges:
+            if np.count_nonzero(region) >= 8:
+                pygame.draw.line(canvas, (237, 182, 113), start, end, 3)
+                cut = True
+        return cut
