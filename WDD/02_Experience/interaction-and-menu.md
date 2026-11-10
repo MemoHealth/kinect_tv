@@ -61,6 +61,7 @@ Multiple foreground shapes influence the same rain naturally. No player IDs, mar
 - The parent UI is not the game UI. Scene continues gently in background or pauses subtle movement.
 - A `--doctor` screen may show technical details, but never during child play.
 - On next launch, start attract mode automatically; **no Start button** after one-time setup. The word 'Fortsätt leka' in the parent menu is permitted.
+- The panel offers presets for volume, intensity, mirror, horizontal zone, and distance. Only these settings go into the Windows user's local application data. The empty-room reference stays in memory and refreshes at startup and after reconnection.
 - No gestures are used to navigate the menu. Adults use keyboard/mouse.
 
 ## First-run calibration

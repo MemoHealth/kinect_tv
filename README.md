@@ -45,6 +45,10 @@ leave the play area empty while it calibrates. For a window, add `--windowed`.
 The scene then reacts to all visible foreground regions. Physical
 three-person play remains an acceptance check.
 
+F1 or holding Esc opens the Swedish adult panel. Adjust sound, rain
+intensity, mirror and play zone, or recalibrate from that panel. Esc closes
+it. Only preferences are saved in the Windows user's local application data.
+
 ## Start here
 
 - For Claude Code or Codex: read [`AGENTS.md`](AGENTS.md), [`CLAUDE.md`](CLAUDE.md), and [`WDD/README.md`](WDD/README.md), then use [`docs/claude/FIRST_PROMPT.md`](docs/claude/FIRST_PROMPT.md).
