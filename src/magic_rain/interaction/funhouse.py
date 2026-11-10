@@ -4,27 +4,28 @@ from numpy.typing import NDArray
 
 class Funhouse:
     def __init__(self) -> None:
-        self._source: NDArray[np.bool_] | None = None
-        self._warped: NDArray[np.bool_] | None = None
+        self._source: NDArray | None = None
+        self._warped: NDArray | None = None
         self._shape: tuple[int, ...] = ()
         self._strength = 0.0
         self._indices: tuple[NDArray[np.intp], NDArray[np.intp]] | None = None
 
-    def warp(self, mask: NDArray[np.bool_], strength: float) -> NDArray[np.bool_]:
+    def warp(self, image: NDArray, strength: float) -> NDArray:
         if strength == 0:
-            return mask
+            return image
+        shape = image.shape[:2]
         if (
             self._indices is None
-            or mask.shape != self._shape
+            or shape != self._shape
             or strength != self._strength
         ):
-            self._shape = mask.shape
+            self._shape = shape
             self._strength = strength
-            self._indices = source_indices(mask.shape, strength)
+            self._indices = source_indices(shape, strength)
             self._source = None
-        if self._warped is None or mask is not self._source:
-            self._source = mask
-            self._warped = mask[self._indices]
+        if self._warped is None or image is not self._source:
+            self._source = image
+            self._warped = image[self._indices]
         return self._warped
 
 

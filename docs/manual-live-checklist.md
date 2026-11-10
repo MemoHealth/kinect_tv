@@ -24,6 +24,9 @@ physical observation on the target Kinect and TV.
 - [ ] Mirror directions feel natural.
 - [ ] Stationary or seated participant can influence rain.
 - [ ] Three people can affect the rain at the same time when in view. Check partial overlap and verify that the rain still responds to the visible silhouettes.
+- [ ] Use one or more silhouettes to fill the bowl with rain and then snow. Verify an empty play zone leaves the bowl unchanged.
+- [ ] Select Ljusmåleri and check that movements from three people leave visible fading rainbow trails.
+- [ ] Select each Lustiga huset lens on a free Kinect and verify the live color reflection. Leave the scene and verify depth-only play resumes.
 - [ ] Child exits -> soft return to calm rain; no failure message.
 - [ ] No scores, labels, gesture icons, tutorials, mandatory poses or achievements.
 - [ ] Adults can open/close simple settings with keyboard; mild/mute options work.

@@ -10,6 +10,7 @@ from .interaction.field import MotionField
 from .interaction.funhouse import Funhouse
 from .live import LiveInput
 from .render.bowl import draw_bowl
+from .render.color_mirror import ColorMirror
 from .render.lightpaint import LightPaint
 from .render.outline import Outline
 from .render.output import Presenter, open_display
@@ -76,6 +77,7 @@ def animate(
     mask = np.zeros(FRAME_SIZE[::-1], dtype=np.bool_)
     outline = Outline(field, mask.shape)
     lightpaint = LightPaint(field, mask.shape)
+    color_mirror: ColorMirror | None = None
     clock = pygame.time.Clock()
     motion = MotionField()
     mirrors = Funhouse()
@@ -137,6 +139,9 @@ def animate(
                     rain = DemoRain(DemoConfig(), snow=settings.scene != "Regn")
                     bowl = Bowl()
                     lightpaint.clear()
+                    use_color = settings.scene in FUNHOUSE_STRENGTH
+                    sensor.set_color(use_color)
+                    color_mirror = ColorMirror(field, mask.shape) if use_color else None
                 ambient.volume(0 if rain.snow else VOLUME[settings.sound])
                 saved = save_settings(path, settings)
                 panel.warning = "" if saved else "Inställningen sparades inte."
@@ -167,15 +172,20 @@ def animate(
         vessel = bowl if settings.scene in ("Regn", "Snö") else None
         painting = settings.scene == PAINT_SCENE
         visible_mask = mirrors.warp(mask, warp)
+        rgb = sensor.color_image if isinstance(sensor, LiveInput) and warp else None
         while remaining >= STEP:
             if painting:
                 lightpaint.update(mask, STEP)
-            else:
+            elif rgb is None:
                 motion.update(visible_mask, STEP)
                 rain.step(STEP, visible_mask, field, motion.wind, bowl=vessel)
             remaining -= STEP
 
-        if painting:
+        if rgb is not None and color_mirror is not None:
+            canvas = scene.canvas
+            color_mirror.draw(canvas, rgb, warp, mirrored=settings.mirror == "På")
+            notice = ""
+        elif painting:
             canvas = scene.canvas
             canvas.fill((5, 8, 21))
             lightpaint.draw(canvas)
@@ -188,7 +198,8 @@ def animate(
             )
         if vessel is not None:
             draw_bowl(canvas, vessel, snow=rain.snow)
-        outline.draw(canvas, visible_mask, dt)
+        if rgb is None:
+            outline.draw(canvas, visible_mask, dt)
         if notice:
             caption = notice_font.render(notice, True, (199, 216, 230))
             rect = caption.get_rect(center=(SCENE_SIZE[0] // 2, SCENE_SIZE[1] - 65))

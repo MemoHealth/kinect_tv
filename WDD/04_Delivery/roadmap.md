@@ -50,6 +50,9 @@ Record its actual signal mode and test three visible people together.
 - MR-09 adds the Snö weather scene and persistent scene selection.
 - MR-10 adds two Lustiga huset variants with warped depth silhouettes.
 - MR-11 adds direct Esc/F1 menu access, manual camera tilt and depth preview.
+- MR-12 adds a bowl filled by body-directed rain and snow.
+- MR-13 adds rainbow long-exposure painting from the depth silhouettes.
+- MR-14 adds opt-in live color to the two funhouse lenses.
 
 **After MR-00, prioritize MR-02 (real sensor) when the owner has the Kinect and adapter available.** Confirm the hardware before investing in elaborate particles. If hardware cannot be tested yet, MR-01 may progress with simulation, but do not mark a hardware-dependent feature as done.
 

@@ -112,3 +112,43 @@ def test_single_frame_check_rejects_missing_depth(monkeypatch, capsys):
     monkeypatch.setattr(diagnostics, "KinectV1Sensor", lambda: sensor)
     assert diagnostics.check_depth(0) == 1
     assert "NO_FRAMES" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize("color_available", [True, False])
+def test_color_is_optional_and_uses_the_same_bounded_frame_lifecycle(
+    monkeypatch, color_available
+):
+    class ColorRuntime(FakeRuntime):
+        def __init__(self):
+            super().__init__()
+            self.flags = []
+
+        def NuiInitialize(self, flags):
+            self.flags.append(flags)
+            return 0
+
+        def NuiImageStreamOpen(self, image_type, resolution, flags, count, event, out):
+            assert count == 2
+            if image_type == kinect_v1.IMAGE_COLOR and not color_available:
+                return 0x83010007
+            ct.cast(out, ct.POINTER(ct.c_void_p))[0] = image_type
+            return 0
+
+    runtime = ColorRuntime()
+    depth = np.full((HEIGHT, WIDTH), 1800, dtype=np.uint16)
+    rgb = np.zeros((HEIGHT, WIDTH, 3), dtype=np.uint8)
+    monkeypatch.setattr(kinect_v1, "_load_runtime", lambda: runtime)
+    monkeypatch.setattr(kinect_v1, "_copy_depth", lambda _texture: depth)
+    monkeypatch.setattr(kinect_v1, "_copy_texture", lambda _texture, _decode: rgb)
+    sensor = KinectV1Sensor(color=True)
+    sensor.start()
+    try:
+        frame = sensor.read_latest(0)
+        assert frame.rgb is (rgb if color_available else None)
+        assert runtime.released == (2 if color_available else 1)
+        expected = [kinect_v1.USES_DEPTH | kinect_v1.USES_COLOR]
+        if not color_available:
+            expected.append(kinect_v1.USES_DEPTH)
+        assert runtime.flags == expected
+    finally:
+        sensor.stop()

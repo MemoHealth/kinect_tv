@@ -47,7 +47,11 @@ The scene then reacts to all visible foreground regions. Physical
 three-person play remains an acceptance check.
 
 Esc or F1 opens and closes the Swedish adult panel. Choose **Avsluta** to quit.
-Under **Bana**, choose Regn, Snö, or one of the two Lustiga huset effects.
+Under **Bana**, choose Regn, Snö, Ljusmåleri, or one of the two Lustiga huset
+effects. In Regn and Snö, use your silhouette to redirect precipitation into
+the bowl. In Ljusmåleri, movement leaves rainbow trails that slowly fade.
+Lustiga huset displays a live color reflection locally. Choose it again each
+session to activate the color camera.
 **Kameravinkel** uses the left/right keys or the −/+ buttons. Use the depth view
 to aim, then leave the play area empty and close the menu to recalibrate.
 Normal play shows the depth silhouettes as soft outlines. Only preferences
