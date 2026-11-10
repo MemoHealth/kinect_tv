@@ -15,15 +15,15 @@ labels: enhancement
 
 ## Scope
 
-- 
+- [In scope]
 
 ## Out of scope
 
-- 
+- [Out of scope]
 
 ## Dependencies and existing PR check
 
-- 
+- [Prerequisites and existing PRs]
 
 ## Acceptance evidence
 

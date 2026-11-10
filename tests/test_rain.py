@@ -26,3 +26,17 @@ def test_ambient_loop_is_reproducible_and_level_bounded():
     assert loop.dtype == np.int16
     assert 0 < np.max(np.abs(loop)) <= 1700
     np.testing.assert_array_equal(loop, rain_loop(22050))
+
+
+def test_recycled_drops_reenter_across_the_sky_without_old_shimmer():
+    rain = DemoRain(DemoConfig(particle_count=8))
+    rain.x[:] = 500
+    rain.y[:] = SCENE_SIZE[1] + 19
+    rain.shimmer[:] = 1
+    rain.slide[:] = 200
+    field = Viewport(0, 0, *SCENE_SIZE)
+    rain.step(STEP, np.zeros((240, 320), dtype=bool), field)
+    assert (rain.y < 0).all()
+    assert np.ptp(rain.x) > 500
+    assert not rain.shimmer.any()
+    assert not rain.slide.any()

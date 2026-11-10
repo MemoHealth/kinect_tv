@@ -34,6 +34,10 @@ Do **not** assign phase completion before proof. Suggested names (`MR-xx`) are l
 
 **Goal:** simple Windows launcher/packaging (no silent driver installer), accessibility audit, child usability observations, 30min soak and documented hardware performance. **Gate:** measured acceptance checklist completed with truthfully pending entries; local Windows launch from one icon or simple command, full-screen on intended TV. **Requirements:** all outstanding in acceptance table; MR-UX-06 observational evidence. **Dependency:** MR-05.
 
+The launcher prefers a connected 3840 × 2160 desktop and exposes a display
+list and an explicit override. The physical HDMI gate is the TCL 75MQLED85K.
+Record its actual signal mode and test three visible people together.
+
 ## MR-07 (optional, conditional) — Pose-powered water orb
 
 **Only open after:** depth-only core feels excellent and real RGB+depth benchmark is sufficiently stable. Implement opt-in pose capability, confidence gate and fallbacks. First pose spell: two hands close creates a softly glowing ball, never mandatory for interaction. **Gate:** observed stability on children and no degradation of baseline latency. **Dependency:** MR-06. **Do not start by default.**

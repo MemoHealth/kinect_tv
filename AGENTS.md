@@ -36,6 +36,6 @@ Relevant WDD change + code + tests + acceptance evidence (automated or explicitl
 
 Stop and report instead of guessing when: hardware identifiers mismatch, driver operations require admin, a library license is incompatible, Kinect frame input cannot be verified, runtime exhibits persistent unsafe flicker, or a change violates a child UX invariant.
 
-## Commands (to be created by implementation)
+## Commands
 
-`python -m magic_rain --demo` (explicit simulator); `python -m magic_rain --doctor` (sensor check); `python -m magic_rain` (real sensor, graceful fault message). `pytest -q`; `ruff check .`. These are **target interfaces**, not commands that work in this specification-only repository.
+`python -m magic_rain --demo` runs the explicit simulator. `python -m magic_rain --doctor` measures the live depth stream. `python -m magic_rain` opens the live scene. On Windows, `Start-Magic-Rain.cmd` runs those same commands. Verify changes with `pytest -q` and `ruff check .`.
