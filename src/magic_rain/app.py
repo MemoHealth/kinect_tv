@@ -128,7 +128,8 @@ def animate(
             if name == "continue":
                 panel.toggle()
             elif name == "camera":
-                sensor.calibrate_or_retry(now, from_menu=True)
+                sensor.calibrate_or_retry(now)
+                panel.toggle()
             elif name == "tilt":
                 panel.warning = sensor.tilt(delta, now)
             else:
