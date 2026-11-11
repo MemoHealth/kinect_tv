@@ -3,7 +3,7 @@ from numpy.typing import NDArray
 
 from .sensors.capture import LatestDepth
 from .sensors.kinect_v1 import HEIGHT, WIDTH, KinectV1Sensor
-from .settings import FUNHOUSE_STRENGTH, Settings
+from .settings import MIRROR_SCENE, Settings
 from .vision.background import BackgroundCalibration
 from .vision.foreground import ForegroundTracker
 
@@ -57,7 +57,7 @@ class LiveInput:
         self._margin = 0.12 if settings.zone == "Centrerad" else 0.0
         self._far = 2500 if settings.distance == "Nära" else 3800
         self._color_assist = settings.color_assist == "På"
-        self.set_color(self._color_assist or settings.scene in FUNHOUSE_STRENGTH)
+        self.set_color(self._color_assist or settings.scene == MIRROR_SCENE)
         if self._tracker is not None:
             self._tracker.color_assist = self._color_assist
         self._configure_tracker()

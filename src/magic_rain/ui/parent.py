@@ -3,7 +3,7 @@ import pygame
 from numpy.typing import NDArray
 
 from ..config import SCENE_SIZE
-from ..settings import DANCE_SCENE, PAINT_EXPLOSION, PAINT_SCENE, Settings
+from ..settings import DANCE_SCENE, MIRROR_SCENE, PAINT_EXPLOSION, PAINT_SCENE, Settings
 
 ROWS = (
     ("continue", "Fortsätt leka"),
@@ -58,6 +58,8 @@ class ParentPanel:
             extra = PAINT_ROWS[:1]
         elif scene == DANCE_SCENE:
             extra = (("dance_style", "Figur"),)
+        elif scene == MIRROR_SCENE:
+            extra = (("mirror_style", "Spegeleffekt"),)
         self.rows = ROWS[:-1] + extra + ROWS[-1:]
         self.selected = min(self.selected, len(self.rows) - 1)
 

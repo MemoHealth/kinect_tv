@@ -62,6 +62,8 @@ Record its actual signal mode and test three visible people together.
 - MR-23 delivers Living Aquarium in its own scene PR.
 - MR-27 delivers Dansspegel in its own scene PR.
 - MR-26 refines shared contours and the existing long-exposure fade controls.
+- MR-28 replaces convex/concave with Spegelstudio and removes the old lens code.
+- MR-29 adds a simple original Fruit Ninja scene, with its own PR.
 
 The [worlds proposal](worlds-feasibility.md) records the scopes and common
 hardware gates. MR-21 and MR-24 are acceptance groups inside the Paint

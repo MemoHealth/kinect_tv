@@ -26,7 +26,7 @@ physical observation on the target Kinect and TV.
 - [ ] Three people can affect the rain at the same time when in view. Check partial overlap and verify that the rain still responds to the visible silhouettes.
 - [ ] Hold both arms to form a cup. Verify water and snow rise inside the shape, overflow at the lower arm and fall when the arms open.
 - [ ] Select Ljusmåleri and check that movements from three people leave visible fading rainbow trails.
-- [ ] Select each Lustiga huset lens and verify the live color reflection. Leave the scene and verify silhouette play resumes.
+- [ ] Select Spegelstudio and verify Eko and Kalejdoskop with the live color reflection. Leave the scene and verify silhouette play resumes.
 - [x] Local hardware smoke test received 300 depth frames and 295 nonempty color frames in 10 s. An integrated virtual-display run rendered 45 frames of the real color mirror and cleared the color image on return to depth-only play. No images were saved.
 - [ ] Child exits -> soft return to calm rain; no failure message.
 - [ ] No scores, labels, gesture icons, tutorials, mandatory poses or achievements.

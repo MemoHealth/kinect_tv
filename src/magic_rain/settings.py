@@ -4,12 +4,12 @@ from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
-FUNHOUSE_STRENGTH = {"Lustiga huset · Konvex": -0.37, "Lustiga huset · Konkav": 0.44}
 PAINT_SCENE = "Ljusmåleri"
 PAINT_EXPLOSION = "Paint Explosion"
 GALAXY_SCENE = "Galaxy Mirror"
 AQUARIUM_SCENE = "Living Aquarium"
 DANCE_SCENE = "Dansspegel"
+MIRROR_SCENE = "Spegelstudio"
 HALF_LIVES = {"Kort": 1.5, "Normal": 3.0, "Lång": 6.0}
 PALETTES = {
     "Norrsken": ((84, 221, 204), (255, 152, 135), (174, 155, 250)),
@@ -19,8 +19,8 @@ PALETTES = {
 
 OPTIONS = {
     "scene": (
-        "Regn", "Snö", *FUNHOUSE_STRENGTH, PAINT_SCENE, PAINT_EXPLOSION,
-        GALAXY_SCENE, AQUARIUM_SCENE, DANCE_SCENE,
+        "Regn", "Snö", PAINT_SCENE, PAINT_EXPLOSION,
+        GALAXY_SCENE, AQUARIUM_SCENE, DANCE_SCENE, MIRROR_SCENE,
     ),
     "sound": ("Av", "Lågt", "Normal"),
     "intensity": ("Milt", "Normalt", "Livligt"),
@@ -31,6 +31,7 @@ OPTIONS = {
     "paint_fade": tuple(HALF_LIVES),
     "paint_palette": tuple(PALETTES),
     "dance_style": ("Streck", "Skelett"),
+    "mirror_style": ("Eko", "Kalejdoskop"),
 }
 
 
@@ -46,6 +47,7 @@ class Settings:
     paint_fade: str = "Normal"
     paint_palette: str = "Norrsken"
     dance_style: str = "Streck"
+    mirror_style: str = "Eko"
 
     def change(self, key: str, delta: int) -> "Settings":
         values = OPTIONS[key]
@@ -70,7 +72,7 @@ def load_settings(path: Path) -> Settings:
     valid = {
         key: data[key] for key, values in OPTIONS.items() if data.get(key) in values
     }
-    if valid.get("scene") in FUNHOUSE_STRENGTH:
+    if valid.get("scene") == MIRROR_SCENE:
         valid.pop("scene")
     return Settings(**valid)
 
@@ -84,7 +86,7 @@ def save_settings(path: Path, settings: Settings) -> bool:
         ) as output:
             temporary = Path(output.name)
             values = asdict(settings)
-            if settings.scene in FUNHOUSE_STRENGTH:
+            if settings.scene == MIRROR_SCENE:
                 values["scene"] = "Regn"
             json.dump({"version": 1, **values}, output, ensure_ascii=False)
         temporary.replace(path)

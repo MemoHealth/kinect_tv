@@ -41,7 +41,7 @@ Where a world needs distinct colors, derive up to three local color slots from c
 
 Keep simulation on CPU, vectorize work in NumPy and allocate buffers at scene startup or resize. Draw the logical canvas once. Preserve the TV’s physical output using the existing SDL path. On the Intel iGPU, profile before tuning. Reduce optional sprite counts, glow and trail detail, then effect-layer resolution, keeping capture rate and alignment. Consider lower logical resolution only after profiling confirms a presentation bottleneck and visual checks show readable contours. No dedicated GPU, new framework or native dependency is part of the baseline.
 
-Children start by entering the camera field. Resting and moving both create feedback. The active world stays fixed until an adult changes it from the existing panel. Normal play has no instructions, HUD, scores or mandatory gestures. The adult retains camera controls, mute and mild settings. Where a world uses trails, add readable fade options such as `Kort`, `Normal` and `Lång` with explicit proposed half-lives of 1.5, 3 and 6 seconds. Expose a small set of configurable palettes with up to three distinguishable player colors and retain the current Ljusmåleri, Snö and Lustiga huset defaults during settings migration. [Parent panel and play rules](../02_Experience/interaction-and-menu.md)
+Children start by entering the camera field. Resting and moving both create feedback. The active world stays fixed until an adult changes it from the existing panel. Normal play has no instructions, HUD, scores or mandatory gestures. The adult retains camera controls, mute and mild settings. Trail options `Kort`, `Normal` and `Lång` use half-lives of 1.5, 3 and 6 seconds. Palette presets provide three distinguishable player colors. Ljusmåleri and Snö retain their defaults. The former convex/concave settings return to Regn after MR-28. [Parent panel and play rules](../02_Experience/interaction-and-menu.md)
 
 ### Optional Paint Explosion artwork export
 
@@ -74,6 +74,23 @@ On the target iGPU, each world must sustain at least 30 FPS at logical 1280 × 7
 The implemented baseline derives a central line from each visible silhouette, supporting all three participants without a pose engine. Streck and Skelett share that geometry. The head and ribs are stylized placements, and the renderer does not provide anatomical joints or reconstruct hidden limbs. Accurate SDK joint tracks remain a future feasibility check. Kinect v1 supports up to two full joint tracks. Applies to MR-UX-02–04/06, MR-CV-02–04, MR-ART-03–06 and MR-SYS-04.
 
 **Acceptance.** Use synthetic masks to check three derived figures, source-mask preservation, both styles and clearing on loss. On the target Kinect and TCL, check quiet poses, crossed arms, quick direction changes, mirror direction and figure readability at normal viewing distance. Check responsiveness and the shared frame-rate floor. Crossing limbs can merge in the silhouette-derived figure. The skeleton appearance changes graphics while retaining the same visible geometry.
+
+## Added delivery scope, 2026-11-11
+
+MR-28 replaces the convex/concave scenes with Spegelstudio. Its Eko and
+Kalejdoskop styles reuse the installed color stream and fall back to colored
+silhouettes. Remove the old lens class, renderer and obsolete tests.
+
+MR-29 adds a simple original Fruit Ninja scene. A moving silhouette cuts
+softly tossed procedural fruit. Any of three participants can contribute
+without a joint track. Uncut fruit falls away and another arrives. There is
+no required gesture, score, bomb or countdown. Scope includes a bounded
+fruit/fragment simulation, original sprites and local motion collision.
+Requirements MR-UX-01–04/06, MR-CV-02–04, MR-ART-02/04/05, MR-SYS-03/04/06.
+Tests cover moving versus stationary silhouettes, three interaction regions,
+fruit respawn and bounded fragments. Original code and procedural artwork
+avoid copying the unlicensed Unity reference. Accurate hand joints and
+third-party game assets are outside this delivery.
 
 ## Risks and decisions to defer
 
