@@ -9,6 +9,7 @@ PAINT_SCENE = "Ljusmåleri"
 PAINT_EXPLOSION = "Paint Explosion"
 GALAXY_SCENE = "Galaxy Mirror"
 AQUARIUM_SCENE = "Living Aquarium"
+DANCE_SCENE = "Dansspegel"
 HALF_LIVES = {"Kort": 1.5, "Normal": 3.0, "Lång": 6.0}
 PALETTES = {
     "Norrsken": ((84, 221, 204), (255, 152, 135), (174, 155, 250)),
@@ -19,7 +20,7 @@ PALETTES = {
 OPTIONS = {
     "scene": (
         "Regn", "Snö", *FUNHOUSE_STRENGTH, PAINT_SCENE, PAINT_EXPLOSION,
-        GALAXY_SCENE, AQUARIUM_SCENE,
+        GALAXY_SCENE, AQUARIUM_SCENE, DANCE_SCENE,
     ),
     "sound": ("Av", "Lågt", "Normal"),
     "intensity": ("Milt", "Normalt", "Livligt"),
@@ -29,6 +30,7 @@ OPTIONS = {
     "color_assist": ("På", "Av"),
     "paint_fade": tuple(HALF_LIVES),
     "paint_palette": tuple(PALETTES),
+    "dance_style": ("Streck", "Skelett"),
 }
 
 
@@ -43,6 +45,7 @@ class Settings:
     color_assist: str = "På"
     paint_fade: str = "Normal"
     paint_palette: str = "Norrsken"
+    dance_style: str = "Streck"
 
     def change(self, key: str, delta: int) -> "Settings":
         values = OPTIONS[key]

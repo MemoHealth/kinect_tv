@@ -3,7 +3,7 @@ import pygame
 from numpy.typing import NDArray
 
 from ..config import SCENE_SIZE
-from ..settings import PAINT_EXPLOSION, Settings
+from ..settings import DANCE_SCENE, PAINT_EXPLOSION, Settings
 
 ROWS = (
     ("continue", "Fortsätt leka"),
@@ -51,9 +51,12 @@ class ParentPanel:
         return pygame.Rect(PANEL.x + 28, PANEL.y + 94 + index * 33, 510, 31)
 
     def set_scene(self, scene: str) -> None:
-        self.rows = (
-            ROWS[:-1] + PAINT_ROWS + ROWS[-1:] if scene == PAINT_EXPLOSION else ROWS
-        )
+        extra = ()
+        if scene == PAINT_EXPLOSION:
+            extra = PAINT_ROWS
+        elif scene == DANCE_SCENE:
+            extra = (("dance_style", "Figur"),)
+        self.rows = ROWS[:-1] + extra + ROWS[-1:]
         self.selected = min(self.selected, len(self.rows) - 1)
 
     @staticmethod
