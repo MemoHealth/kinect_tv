@@ -45,6 +45,11 @@ physical observation on the target Kinect and TV.
 - [ ] Restart app; previously configured values persist.
 - [x] Target PC live Kinect soak with virtual display and audio output on 2026-11-10. Ran for 1,800.2 s, rendered 109,142 frames, averaged 60.6 FPS and sustained at least 56.5 FPS across sampled 10-second intervals. Zero camera-fault frames. Sampled working set was 64.7 MiB at baseline and peaked at 67.0 MiB. The application exited cleanly.
 - [ ] Confirm performance and comfort with the real HDMI display and three people in the room.
+- [x] A 20-second live Rain trial on the TCL used 3840 × 2160 at 59 Hz and rendered
+  857 frames at 42.8 FPS (p95 frame interval 47 ms). Calibration completed and
+  there was no sensor fault. Capture delivered 552 depth frames and 1 registered
+  color pair in this run, so the result mainly exercised the depth fallback.
+  This was neither a three-person playtest nor a 30-minute soak.
 - [ ] No strobing, full-screen flashes, startling sounds or upsetting visuals.
 - [ ] Runtime operates without internet and without recording children.
 

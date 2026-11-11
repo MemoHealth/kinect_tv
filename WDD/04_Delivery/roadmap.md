@@ -57,6 +57,14 @@ Record its actual signal mode and test three visible people together.
 - MR-16 layers rain with tapered streaks and brighter contact highlights.
 - MR-17 replaces the fixed bowl with water and snow held by the arm silhouette.
 - MR-18 improves camera aiming and repairs small depth gaps using registered color.
+- MR-20 delivers Paint Explosion, including the planned color, fade and artwork export controls, in one scene PR.
+- MR-22 delivers Galaxy Mirror in its own scene PR.
+- MR-23 delivers Living Aquarium in its own scene PR.
+- MR-27 delivers Dansspegel in its own scene PR.
+
+The [worlds proposal](worlds-feasibility.md) records the scopes and common
+hardware gates. MR-21 and MR-24 are acceptance groups inside the Paint
+Explosion issue. Astra reviews each scene before its PR is opened.
 
 ### MR-18 — Silhouette recovery and camera alignment
 

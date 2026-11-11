@@ -6,15 +6,24 @@ from tempfile import NamedTemporaryFile
 
 FUNHOUSE_STRENGTH = {"Lustiga huset · Konvex": -0.37, "Lustiga huset · Konkav": 0.44}
 PAINT_SCENE = "Ljusmåleri"
+PAINT_EXPLOSION = "Paint Explosion"
+HALF_LIVES = {"Kort": 1.5, "Normal": 3.0, "Lång": 6.0}
+PALETTES = {
+    "Norrsken": ((84, 221, 204), (255, 152, 135), (174, 155, 250)),
+    "Solnedgång": ((255, 199, 104), (242, 121, 171), (119, 190, 251)),
+    "Havsglas": ((149, 234, 164), (95, 171, 247), (247, 151, 130)),
+}
 
 OPTIONS = {
-    "scene": ("Regn", "Snö", *FUNHOUSE_STRENGTH, PAINT_SCENE),
+    "scene": ("Regn", "Snö", *FUNHOUSE_STRENGTH, PAINT_SCENE, PAINT_EXPLOSION),
     "sound": ("Av", "Lågt", "Normal"),
     "intensity": ("Milt", "Normalt", "Livligt"),
     "mirror": ("På", "Av"),
     "zone": ("Bred", "Centrerad"),
     "distance": ("Normalt", "Nära"),
     "color_assist": ("På", "Av"),
+    "paint_fade": tuple(HALF_LIVES),
+    "paint_palette": tuple(PALETTES),
 }
 
 
@@ -27,6 +36,8 @@ class Settings:
     zone: str = "Bred"
     distance: str = "Normalt"
     color_assist: str = "På"
+    paint_fade: str = "Normal"
+    paint_palette: str = "Norrsken"
 
     def change(self, key: str, delta: int) -> "Settings":
         values = OPTIONS[key]

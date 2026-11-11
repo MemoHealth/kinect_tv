@@ -3,7 +3,7 @@ import pygame
 from numpy.typing import NDArray
 
 from ..config import SCENE_SIZE
-from ..settings import Settings
+from ..settings import PAINT_EXPLOSION, Settings
 
 ROWS = (
     ("continue", "Fortsätt leka"),
@@ -19,6 +19,11 @@ ROWS = (
     ("quit", "Avsluta"),
 )
 PANEL = pygame.Rect(210, 56, 860, 608)
+PAINT_ROWS = (
+    ("paint_fade", "Färgens toning"),
+    ("paint_palette", "Spelarfärger"),
+    ("save_art", "Spara tavla"),
+)
 
 
 class ParentPanel:
@@ -26,6 +31,7 @@ class ParentPanel:
         self.visible = False
         self.selected = 0
         self.warning = ""
+        self.rows = ROWS
         self._preview_source: NDArray[np.uint16] | None = None
         self._preview_mask: NDArray[np.bool_] | None = None
         self._preview_surface: pygame.Surface | None = None
@@ -39,11 +45,22 @@ class ParentPanel:
     def row(index: int) -> pygame.Rect:
         return pygame.Rect(PANEL.x + 28, PANEL.y + 94 + index * 41, 510, 38)
 
+    def _row(self, index: int) -> pygame.Rect:
+        if self.rows == ROWS:
+            return self.row(index)
+        return pygame.Rect(PANEL.x + 28, PANEL.y + 94 + index * 33, 510, 31)
+
+    def set_scene(self, scene: str) -> None:
+        self.rows = (
+            ROWS[:-1] + PAINT_ROWS + ROWS[-1:] if scene == PAINT_EXPLOSION else ROWS
+        )
+        self.selected = min(self.selected, len(self.rows) - 1)
+
     @staticmethod
     def tilt_buttons(row: pygame.Rect) -> tuple[pygame.Rect, pygame.Rect]:
         return (
-            pygame.Rect(row.right - 148, row.y + 4, 37, 30),
-            pygame.Rect(row.right - 44, row.y + 4, 37, 30),
+            pygame.Rect(row.right - 148, row.centery - 14, 37, 28),
+            pygame.Rect(row.right - 44, row.centery - 14, 37, 28),
         )
 
     def toggle(self) -> None:
@@ -67,27 +84,27 @@ class ParentPanel:
 
     def key(self, key: int) -> tuple[str, int] | None:
         if key == pygame.K_UP:
-            self.selected = (self.selected - 1) % len(ROWS)
+            self.selected = (self.selected - 1) % len(self.rows)
         elif key == pygame.K_DOWN:
-            self.selected = (self.selected + 1) % len(ROWS)
+            self.selected = (self.selected + 1) % len(self.rows)
         elif key in (pygame.K_LEFT, pygame.K_RIGHT, pygame.K_RETURN, pygame.K_SPACE):
             delta = -1 if key == pygame.K_LEFT else 1
-            action = ROWS[self.selected][0]
+            action = self.rows[self.selected][0]
             if action == "tilt" and key not in (pygame.K_LEFT, pygame.K_RIGHT):
                 return None
             if key in (pygame.K_LEFT, pygame.K_RIGHT) and action in (
-                "continue", "camera", "quit"
+                "continue", "camera", "quit", "save_art"
             ):
                 return None
             return action, delta
         return None
 
     def click(self, point: tuple[float, float]) -> tuple[str, int] | None:
-        for index, (action, _) in enumerate(ROWS):
-            if self.row(index).collidepoint(point):
+        for index, (action, _) in enumerate(self.rows):
+            if self._row(index).collidepoint(point):
                 self.selected = index
                 if action == "tilt":
-                    down, up = self.tilt_buttons(self.row(index))
+                    down, up = self.tilt_buttons(self._row(index))
                     if down.collidepoint(point):
                         return action, -1
                     if up.collidepoint(point):
@@ -115,8 +132,8 @@ class ParentPanel:
         canvas.blit(header, (PANEL.x + 30, PANEL.y + 22))
         sub = self._small.render("För vuxna", True, (148, 176, 192))
         canvas.blit(sub, (PANEL.x + 31, PANEL.y + 62))
-        for index, (action, label) in enumerate(ROWS):
-            rect = self.row(index)
+        for index, (action, label) in enumerate(self.rows):
+            rect = self._row(index)
             if index == self.selected:
                 pygame.draw.rect(canvas, (29, 56, 75), rect, border_radius=10)
                 pygame.draw.rect(canvas, (104, 180, 187), rect, 1, border_radius=10)
