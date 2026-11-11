@@ -32,11 +32,11 @@ shape until it reaches the lower side. Additional precipitation spills
 over that side. Opening the arms releases the accumulated water or snow.
 Up to three separate shapes can collect independently.
 
-The two Lustiga huset scenes warp the live Kinect color image. Konvex
-enlarges shapes near the center and Konkav compresses them. The mapping
-stays inside the camera field and preserves participant order. If fresh
-color is unavailable, the same lens warps the existing depth outlines.
-The adult selects color explicitly for each session.
+Spegelstudio replaces the former convex and concave lenses. Eko leaves
+short fading reflections of movement. Kalejdoskop combines a recognizable
+central reflection with surrounding symmetric patterns. Camera pixels stay
+in memory. With no fresh RGB, the same effects use colored silhouettes.
+The adult selects the mirror scene explicitly for each session.
 
 Ljusmåleri uses movement along the silhouettes as a brush. The colors cycle
 through the rainbow and accumulate as a soft, fading long-exposure trail.
@@ -99,6 +99,16 @@ Tests cover three silhouettes, preservation of the source mask, a style
 switch and clearing on loss. This is silhouette-derived geometry; it does
 not supply anatomical joints or infer hidden limbs. Accurate SDK skeleton
 tracking remains a separately gated enhancement.
+
+### Spegelstudio delivery (MR-28)
+
+Requirements MR-UX-02/04/05, MR-CV-02/04, MR-ART-05, MR-SYS-03/04/06.
+Reuse the installed depth/RGB capture and the common viewport. Keep at most
+four short-lived reflection samples and cache the kaleidoscope map.
+Remove the old lens module, renderer and obsolete lens tests. Tests cover
+horizontal mapping, both new styles, expiry of RGB history, depth fallback
+and old settings recovery. New capture libraries, recording and a GPU
+framework are out of scope.
 
 ## Optional reliable skeleton feature gate
 

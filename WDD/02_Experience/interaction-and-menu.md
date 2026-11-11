@@ -65,7 +65,7 @@ Multiple foreground shapes influence the same rain naturally. No player IDs, mar
 - On next launch, start attract mode automatically; **no Start button** after one-time setup. The word 'Fortsätt leka' in the parent menu is permitted.
 - The panel offers presets for volume, intensity, mirror, horizontal zone, and distance. Only these settings go into the Windows user's local application data. The empty-room reference stays in memory and refreshes at startup and after reconnection.
 - The adult panel shows depth, the current silhouette and the playable frame. An amber edge indicates where the silhouette reaches the frame. Tilt moves in 5° steps within the SDK range with a cooldown. After aiming, the adult can select calibration and step aside during a countdown while the panel stays open.
-- Color assistance defaults to on. The menu shows whether registration is active, and the adult can disable it. Only the funhouse lens displays the actual color image.
+- Color assistance defaults to on. The menu shows whether registration is active, and the adult can disable it. Spegelstudio displays the actual color image when the adult selects that scene.
 - No gestures are used to navigate the menu. Adults use keyboard/mouse.
 
 ## First-run calibration

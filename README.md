@@ -47,8 +47,8 @@ The scene then reacts to all visible foreground regions. Physical
 three-person play remains an acceptance check.
 
 Esc or F1 opens and closes the Swedish adult panel. Choose **Avsluta** to quit.
-Under **Bana**, choose Regn, Snö, Ljusmåleri, or one of the two Lustiga huset
-effects. In Regn and Snö, shape your arms like a cup to collect water or snow.
+Under **Bana**, choose the weather, painting, galaxy, aquarium, dance or
+mirror scenes. In Regn and Snö, shape your arms like a cup to collect water or snow.
 The level rises inside your silhouette until it spills over the lower arm.
 Opening your arms releases it. In Ljusmåleri, movement leaves rainbow trails
 that slowly fade.
@@ -68,8 +68,9 @@ The lines are derived from the visible silhouette, so hidden limbs and
 precise anatomical joints are outside this mode's current tracking.
 **Färgens toning** also works in Ljusmåleri. Contours and paint trails use a
 small display filter for smoother edges.
-Lustiga huset displays a live color reflection locally. Choose it again each
-session to display the reflection.
+Spegelstudio offers **Eko** and **Kalejdoskop**. It displays live color when
+available and colored silhouettes otherwise. Choose it each session to
+display the live reflection. The former convex/concave lenses are removed.
 **Kameravinkel** uses the left/right keys or the −/+ buttons. Aim with the live
 view in the menu, choose **Kalibrera kameran**, then step aside during the
 three-second countdown. Keep the area empty until the menu reads
