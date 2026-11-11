@@ -70,6 +70,19 @@ Reuse the existing viewport, contour and cached sprite renderer. Tests cover
 three stationary shapes, local moving emissions and empty-mask cleanup.
 GPU compute, raw color display and volumetric rendering are out of scope.
 
+### Living Aquarium (MR-23)
+
+Three visible silhouettes can attract nearby fish toward their upper-body
+outer points. This is a contour-based hand approximation. Hands need not
+activate a gesture. Jellyfish drift away from the visible body. The school
+returns to gentle motion when people leave.
+
+Requirements MR-UX-02/03/06, MR-CV-02–04, MR-ART-02–05, MR-SYS-03/04/06.
+Use 24 cached fish sprites, five animated jellyfish and bounded bubbles.
+Tests cover three sets of targets, fish approach, jellyfish avoidance and
+empty-scene recovery. Precise hand joints, identity tracking, new assets,
+fluid simulation and RGB are out of scope.
+
 ## Optional reliable skeleton feature gate
 
 Pose magic is a separate feature flag (`pose_magic=false` initially). Requires simultaneous RGB+depth stability or proven single-stream human pose inference on real hardware; test with small children, different heights, occlusions, backlighting and overlap. If confidence is low, silently fall back to silhouette reactions. Any gesture must feel like an *amplification* of natural motion; avoid commands and tutorial overlays.

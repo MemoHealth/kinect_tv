@@ -59,6 +59,9 @@ generated artwork as a PNG in `Pictures/Magic Rain` inside the Windows user
 profile. The exported image excludes the menu and camera pixels.
 Galaxy Mirror turns the silhouettes into glowing constellations. Moving
 arms scatter a bounded cloud of stardust.
+Living Aquarium adds fish that approach the silhouette's upper outer points
+and jellyfish that drift away. Hand following is approximated from the
+silhouette and works with three visible players without pose tracking.
 Lustiga huset displays a live color reflection locally. Choose it again each
 session to display the reflection.
 **Kameravinkel** uses the left/right keys or the −/+ buttons. Aim with the live

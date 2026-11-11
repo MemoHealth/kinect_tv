@@ -10,6 +10,7 @@ from .coordinates import Viewport
 from .interaction.field import MotionField
 from .interaction.funhouse import Funhouse
 from .live import LiveInput
+from .render.aquarium import LivingAquarium
 from .render.arm_water import draw_arm_water
 from .render.color_mirror import ColorMirror
 from .render.galaxy import GalaxyMirror
@@ -20,6 +21,7 @@ from .render.paint_explosion import PaintExplosion
 from .render.scene import Scene
 from .sensors.simulated import FRAME_SIZE, OBSTACLE_DEPTH_MM, SimulatedSensor
 from .settings import (
+    AQUARIUM_SCENE,
     FUNHOUSE_STRENGTH,
     GALAXY_SCENE,
     PAINT_EXPLOSION,
@@ -40,13 +42,15 @@ INTENSITY = {"Milt": 0.78, "Normalt": 1.0, "Livligt": 1.12}
 
 def make_world(
     settings: Settings, field: Viewport, shape: tuple[int, int]
-) -> PaintExplosion | GalaxyMirror | None:
+) -> PaintExplosion | GalaxyMirror | LivingAquarium | None:
     if settings.scene == PAINT_EXPLOSION:
         world = PaintExplosion(field, shape)
         world.configure(settings.paint_fade, settings.paint_palette)
         return world
     if settings.scene == GALAXY_SCENE:
         return GalaxyMirror(field, shape)
+    if settings.scene == AQUARIUM_SCENE:
+        return LivingAquarium(field, shape)
     return None
 
 
