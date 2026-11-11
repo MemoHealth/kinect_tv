@@ -42,6 +42,22 @@ Ljusmåleri uses movement along the silhouettes as a brush. The colors cycle
 through the rainbow and accumulate as a soft, fading long-exposure trail.
 Each participant can contribute at once. Switching scenes clears the trail.
 
+### Paint Explosion (MR-20)
+
+Ordinary motion draws soft trails. Faster local movement releases short
+sprays from the moving contour. Three separable players can paint in three
+colors. A merged shape blends the visible colors while the previous slots
+stay available for a short split. The adult panel offers three palettes
+and three trail half-lives. Opening it holds the artwork for preview.
+The adult can save just the generated artwork as a local PNG.
+
+Requirements MR-UX-02/03/05/06, MR-CV-02–04, MR-ART-02/04–06,
+MR-SYS-03/04/06. Settings and artwork export are scoped to Paint Explosion.
+Tests cover three color slots, merging, elapsed-time fade, bounded spray,
+and explicit export without camera, menu or diagnostic pixels. Risks include
+temporary color reassignment after occlusion and TV frame budget. Raw image
+capture, a pose dependency and automated saving are out of scope.
+
 ## Optional reliable skeleton feature gate
 
 Pose magic is a separate feature flag (`pose_magic=false` initially). Requires simultaneous RGB+depth stability or proven single-stream human pose inference on real hardware; test with small children, different heights, occlusions, backlighting and overlap. If confidence is low, silently fall back to silhouette reactions. Any gesture must feel like an *amplification* of natural motion; avoid commands and tutorial overlays.

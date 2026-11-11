@@ -24,15 +24,23 @@ class LightPaint:
         self._previous = np.zeros_like(self._previous)
         self._phase = 0.0
 
-    def update(self, mask: NDArray[np.bool_], dt: float) -> None:
-        self._history *= 2 ** (-dt / 3)
+    def update(
+        self, mask: NDArray[np.bool_], dt: float, *, half_life: float = 3,
+        labels: NDArray[np.uint8] | None = None,
+        palette: NDArray[np.float32] | None = None,
+    ) -> None:
+        self._history *= 2 ** (-dt / half_life)
         self._phase = (self._phase + dt * 0.19) % 1
         if mask is self._previous:
             return
         moving_edges = boundary(mask) & ~self._previous
         rows, cols = np.nonzero(moving_edges)
-        hues = ((self._phase + 0.45 * cols / mask.shape[1]) * 256).astype(int) % 256
-        self._history[rows, cols] = np.maximum(self._history[rows, cols], RAINBOW[hues])
+        if labels is not None and palette is not None:
+            colors = palette[labels[rows, cols]]
+        else:
+            hues = ((self._phase + 0.45 * cols / mask.shape[1]) * 256).astype(int) % 256
+            colors = RAINBOW[hues]
+        self._history[rows, cols] = np.maximum(self._history[rows, cols], colors)
         self._previous = mask
 
     def draw(self, canvas: pygame.Surface) -> None:

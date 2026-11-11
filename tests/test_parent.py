@@ -15,7 +15,7 @@ def test_settings_round_trip_and_recover_from_corruption(tmp_path):
     assert load_settings(path) == settings
     assert set(json.loads(path.read_text(encoding="utf-8"))) == {
         "version", "scene", "sound", "intensity", "mirror", "zone", "distance",
-        "color_assist",
+        "color_assist", "paint_fade", "paint_palette",
     }
     path.write_text('{"version":1,"sound":"bad","mirror":"Av"}', encoding="utf-8")
     assert load_settings(path) == Settings(mirror="Av")

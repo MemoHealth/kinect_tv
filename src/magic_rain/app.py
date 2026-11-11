@@ -1,3 +1,4 @@
+from pathlib import Path
 from time import monotonic
 
 import numpy as np
@@ -14,10 +15,12 @@ from .render.color_mirror import ColorMirror
 from .render.lightpaint import LightPaint
 from .render.outline import Outline
 from .render.output import Presenter, init_display, open_display
+from .render.paint_explosion import PaintExplosion
 from .render.scene import Scene
 from .sensors.simulated import FRAME_SIZE, OBSTACLE_DEPTH_MM, SimulatedSensor
 from .settings import (
     FUNHOUSE_STRENGTH,
+    PAINT_EXPLOSION,
     PAINT_SCENE,
     Settings,
     load_settings,
@@ -33,8 +36,8 @@ VOLUME = {"Av": 0.0, "Lågt": 0.62, "Normal": 1.0}
 INTENSITY = {"Milt": 0.78, "Normalt": 1.0, "Livligt": 1.12}
 
 
-def run_demo(windowed: bool, display: int | None = None) -> int:
-    return run_scene(SimulatedSensor(), windowed, display)
+def run_demo(windowed: bool, display: int | None = None, *, scene: str = "Regn") -> int:
+    return run_scene(SimulatedSensor(), windowed, display, demo_scene=scene)
 
 
 def run_live(windowed: bool, display: int | None = None) -> int:
@@ -42,14 +45,15 @@ def run_live(windowed: bool, display: int | None = None) -> int:
 
 
 def run_scene(
-    sensor: SimulatedSensor | LiveInput, windowed: bool, screen: int | None = None
+    sensor: SimulatedSensor | LiveInput, windowed: bool, screen: int | None = None,
+    *, demo_scene: str = "Regn",
 ) -> int:
     ambient = AmbientRain()
     try:
         init_display()
         pygame.font.init()
         ambient.start()
-        return animate(sensor, windowed, ambient, screen)
+        return animate(sensor, windowed, ambient, screen, demo_scene=demo_scene)
     except pygame.error as error:
         print(f"Det gick inte att visa regnscenen. {error}")
         return 1
@@ -65,6 +69,8 @@ def animate(
     windowed: bool,
     ambient: AmbientRain,
     screen: int | None,
+    *,
+    demo_scene: str = "Regn",
 ) -> int:
     display = open_display(windowed, screen)
     presenter = Presenter()
@@ -84,7 +90,14 @@ def animate(
     notice_font = pygame.font.SysFont("segoeui", 25)
     panel = ParentPanel() if not demo else None
     path = settings_path()
-    settings = load_settings(path) if panel is not None else Settings()
+    settings = load_settings(path) if panel is not None else Settings(scene=demo_scene)
+    if panel is not None:
+        panel.set_scene(settings.scene)
+    paint = (
+        PaintExplosion(field, mask.shape) if settings.scene == PAINT_EXPLOSION else None
+    )
+    if paint is not None:
+        paint.configure(settings.paint_fade, settings.paint_palette)
     rain = DemoRain(DemoConfig(), snow=settings.scene != "Regn")
     arm_water = ArmWater()
     ambient.volume(0 if rain.snow else VOLUME[settings.sound])
@@ -131,17 +144,33 @@ def animate(
                 sensor.calibrate_or_retry(now, from_menu=True)
             elif name == "tilt":
                 panel.warning = sensor.tilt(delta, now)
+            elif name == "save_art" and paint is not None:
+                if getattr(event, "repeat", False):
+                    continue
+                try:
+                    paint.save(Path.home() / "Pictures" / "Magic Rain")
+                    panel.warning = "Tavlan sparades i Bilder / Magic Rain."
+                except (OSError, pygame.error):
+                    panel.warning = "Tavlan kunde inte sparas."
             else:
                 settings = settings.change(name, delta)
-                sensor.configure(settings)
+                if name in ("scene", "mirror", "zone", "distance", "color_assist"):
+                    sensor.configure(settings)
                 if name == "color_assist" and settings.color_assist == "På":
                     sensor.calibrate_or_retry(now, from_menu=True)
                 if name == "scene":
+                    panel.set_scene(settings.scene)
                     rain = DemoRain(DemoConfig(), snow=settings.scene != "Regn")
                     arm_water = ArmWater()
                     lightpaint.clear()
                     use_color = settings.scene in FUNHOUSE_STRENGTH
                     color_mirror = ColorMirror(field, mask.shape) if use_color else None
+                    paint = (
+                        PaintExplosion(field, mask.shape)
+                        if settings.scene == PAINT_EXPLOSION else None
+                    )
+                if paint is not None:
+                    paint.configure(settings.paint_fade, settings.paint_palette)
                 ambient.volume(0 if rain.snow else VOLUME[settings.sound])
                 saved = save_settings(path, settings)
                 panel.warning = "" if saved else "Inställningen sparades inte."
@@ -176,7 +205,10 @@ def animate(
         visible_mask = mirrors.warp(mask, warp)
         rgb = sensor.color_image if isinstance(sensor, LiveInput) and warp else None
         while remaining >= STEP:
-            if painting:
+            if paint is not None:
+                if not panel_visible:
+                    paint.update(mask, STEP)
+            elif painting:
                 lightpaint.update(mask, STEP)
             elif rgb is None:
                 motion.update(visible_mask, STEP)
@@ -187,6 +219,9 @@ def animate(
             canvas = scene.canvas
             color_mirror.draw(canvas, rgb, warp, mirrored=settings.mirror == "På")
             notice = ""
+        elif paint is not None:
+            canvas = scene.canvas
+            paint.draw(canvas)
         elif painting:
             canvas = scene.canvas
             canvas.fill((5, 8, 21))
@@ -200,7 +235,7 @@ def animate(
             )
         if water is not None:
             draw_arm_water(canvas, water, field, snow=rain.snow)
-        if rgb is None:
+        if rgb is None and (paint is None or not panel_visible):
             outline.draw(canvas, visible_mask, dt)
         if notice:
             caption = notice_font.render(notice, True, (199, 216, 230))
