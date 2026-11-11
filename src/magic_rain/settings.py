@@ -8,6 +8,7 @@ FUNHOUSE_STRENGTH = {"Lustiga huset · Konvex": -0.37, "Lustiga huset · Konkav"
 PAINT_SCENE = "Ljusmåleri"
 PAINT_EXPLOSION = "Paint Explosion"
 GALAXY_SCENE = "Galaxy Mirror"
+AQUARIUM_SCENE = "Living Aquarium"
 HALF_LIVES = {"Kort": 1.5, "Normal": 3.0, "Lång": 6.0}
 PALETTES = {
     "Norrsken": ((84, 221, 204), (255, 152, 135), (174, 155, 250)),
@@ -17,7 +18,8 @@ PALETTES = {
 
 OPTIONS = {
     "scene": (
-        "Regn", "Snö", *FUNHOUSE_STRENGTH, PAINT_SCENE, PAINT_EXPLOSION, GALAXY_SCENE
+        "Regn", "Snö", *FUNHOUSE_STRENGTH, PAINT_SCENE, PAINT_EXPLOSION,
+        GALAXY_SCENE, AQUARIUM_SCENE,
     ),
     "sound": ("Av", "Lågt", "Normal"),
     "intensity": ("Milt", "Normalt", "Livligt"),
