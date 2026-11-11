@@ -71,6 +71,9 @@ small display filter for smoother edges.
 Spegelstudio offers **Eko** and **Kalejdoskop**. It displays live color when
 available and colored silhouettes otherwise. Choose it each session to
 display the live reflection. The former convex/concave lenses are removed.
+Fruit Ninja tosses soft colorful fruit into view. Move a hand or arm to
+split it. Up to three visible players can share the scene, and new fruit
+keeps arriving.
 **Kameravinkel** uses the left/right keys or the −/+ buttons. Aim with the live
 view in the menu, choose **Kalibrera kameran**, then step aside during the
 three-second countdown. Keep the area empty until the menu reads

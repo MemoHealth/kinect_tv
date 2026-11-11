@@ -55,15 +55,27 @@ physical observation on the target Kinect and TV.
 
 ## New-world software checks, 2026-11-11
 
-- [x] Paint Explosion, Galaxy Mirror, Living Aquarium and Dansspegel have each
-  been reviewed by Astra before their PR. The separate shared contour change
-  was also reviewed.
+- [x] Paint Explosion, Galaxy Mirror, Living Aquarium, Dansspegel,
+  Spegelstudio and Fruit Ninja have each been reviewed by Astra before
+  their PR. The shared contour change was also reviewed.
 - [x] Synthetic fixtures exercise three figures, separated colors and short
   merges, local stardust, fish attraction, jellyfish avoidance and both dance
   styles. The source mask remains unchanged by display smoothing.
 - [x] Paint export is explicit and uses the generated artwork surface. Tests
   compare the PNG to that surface after a separate UI surface is overwritten.
   Elapsed-time fade is checked at 30 and 60 updates per second.
+- [x] All nine active scenes completed 75 frames and a clean exit through
+  the normal simulated command entry point. The six new modes also passed
+  opening and closing the adult panel with a synthetic live-input fixture.
+- [x] Each of the six new modes completed 1,800 three-player updates and
+  renders, representing 60 simulated seconds per mode. Checked storage bounds
+  for fruits, fragments, reflection samples and dance segments throughout.
+  This was an offline scenario, excluding camera capture and TV presentation.
+- [ ] Certify stable native-TV frame rate for each new mode. CPU timings
+  varied during local testing, with some samples over 33.3 ms, so the
+  30 FPS minimum is not yet an accepted hardware result.
+- [x] The obsolete convex/concave modules and their lens-specific tests are
+  removed. Old saved lens names safely return to Regn.
 - [ ] Test all new worlds with the real Kinect and three people on the TCL.
   Hardware is unavailable for this delivery. Fish targets and dance figures
   are derived from the visible contour; anatomical joint tracking is outside

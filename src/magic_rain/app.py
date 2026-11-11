@@ -12,6 +12,7 @@ from .live import LiveInput
 from .render.aquarium import LivingAquarium
 from .render.arm_water import draw_arm_water
 from .render.dance import DanceMirror
+from .render.fruit_ninja import FruitNinja
 from .render.galaxy import GalaxyMirror
 from .render.lightpaint import LightPaint
 from .render.mirror_studio import MirrorStudio
@@ -23,6 +24,7 @@ from .sensors.simulated import FRAME_SIZE, OBSTACLE_DEPTH_MM, SimulatedSensor
 from .settings import (
     AQUARIUM_SCENE,
     DANCE_SCENE,
+    FRUIT_SCENE,
     GALAXY_SCENE,
     HALF_LIVES,
     MIRROR_SCENE,
@@ -40,11 +42,15 @@ from .ui.parent import ParentPanel
 STEP = 1 / DEMO_FPS
 VOLUME = {"Av": 0.0, "Lågt": 0.62, "Normal": 1.0}
 INTENSITY = {"Milt": 0.78, "Normalt": 1.0, "Livligt": 1.12}
+World = (
+    PaintExplosion | GalaxyMirror | LivingAquarium
+    | DanceMirror | MirrorStudio | FruitNinja
+)
 
 
 def make_world(
     settings: Settings, field: Viewport, shape: tuple[int, int]
-) -> PaintExplosion | GalaxyMirror | LivingAquarium | DanceMirror | MirrorStudio | None:
+) -> World | None:
     if settings.scene == PAINT_EXPLOSION:
         world = PaintExplosion(field, shape)
         world.configure(settings.paint_fade, settings.paint_palette)
@@ -61,6 +67,8 @@ def make_world(
         mirror = MirrorStudio(field, shape)
         mirror.configure(settings.mirror_style)
         return mirror
+    if settings.scene == FRUIT_SCENE:
+        return FruitNinja(field, shape)
     return None
 
 
