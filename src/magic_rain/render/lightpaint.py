@@ -5,6 +5,7 @@ import pygame
 from numpy.typing import NDArray
 
 from ..coordinates import Viewport
+from .coverage import soften
 from .outline import boundary
 
 RAINBOW = np.array([hsv_to_rgb(index / 256, 0.78, 0.75) for index in range(256)])
@@ -44,7 +45,8 @@ class LightPaint:
         self._previous = mask
 
     def draw(self, canvas: pygame.Surface) -> None:
-        colors = (255 * self._history).astype(np.uint8).swapaxes(0, 1)
+        smoothed = np.maximum(self._history * 0.92, soften(self._history))
+        colors = (255 * smoothed).astype(np.uint8).swapaxes(0, 1)
         pygame.surfarray.blit_array(self._brush, colors)
         pygame.transform.smoothscale(self._brush, self._scaled.get_size(), self._scaled)
         canvas.blit(

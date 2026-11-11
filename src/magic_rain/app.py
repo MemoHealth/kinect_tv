@@ -26,6 +26,7 @@ from .settings import (
     DANCE_SCENE,
     FUNHOUSE_STRENGTH,
     GALAXY_SCENE,
+    HALF_LIVES,
     PAINT_EXPLOSION,
     PAINT_SCENE,
     Settings,
@@ -228,7 +229,7 @@ def animate(
                 if not (panel_visible and isinstance(world, PaintExplosion)):
                     world.update(mask, STEP)
             elif painting:
-                lightpaint.update(mask, STEP)
+                lightpaint.update(mask, STEP, half_life=HALF_LIVES[settings.paint_fade])
             elif rgb is None:
                 motion.update(visible_mask, STEP)
                 rain.step(STEP, visible_mask, field, motion.wind, water=water)

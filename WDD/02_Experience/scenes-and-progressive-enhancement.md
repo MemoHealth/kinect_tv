@@ -41,6 +41,9 @@ The adult selects color explicitly for each session.
 Ljusmåleri uses movement along the silhouettes as a brush. The colors cycle
 through the rainbow and accumulate as a soft, fading long-exposure trail.
 Each participant can contribute at once. Switching scenes clears the trail.
+The adult can select the same Kort, Normal and Lång trail half-lives in
+Ljusmåleri as in Paint Explosion. Existing settings retain the three-second
+default and the rainbow rendering.
 
 ### Paint Explosion (MR-20)
 

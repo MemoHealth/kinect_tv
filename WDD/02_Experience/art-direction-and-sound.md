@@ -6,6 +6,11 @@ A premium, calm, magical installation rather than an arcade: deep navy, blue-lil
 
 ## Animation grammar
 
+- MR-26 filters coverage at sensor resolution before drawing the outline.
+  The collision mask and arm-water geometry keep the original sensor data.
+  Painting keeps a bright stroke core with a gently filtered edge.
+  Verify diagonal edges and three-pixel gaps in synthetic fixtures.
+
 - MR-16 draws three stable visual depth layers for rain. Distant drops
   stay short and subdued. Near drops have a brighter tip and a tapered,
   darker tail. A subtle ground haze adds depth, while body impacts remain

@@ -66,6 +66,8 @@ Dansspegel turns the silhouettes into softly drawn stick figures. Choose
 **Figur → Skelett** in the adult panel for a friendly skeleton look.
 The lines are derived from the visible silhouette, so hidden limbs and
 precise anatomical joints are outside this mode's current tracking.
+**Färgens toning** also works in Ljusmåleri. Contours and paint trails use a
+small display filter for smoother edges.
 Lustiga huset displays a live color reflection locally. Choose it again each
 session to display the reflection.
 **Kameravinkel** uses the left/right keys or the −/+ buttons. Aim with the live

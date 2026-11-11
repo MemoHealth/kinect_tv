@@ -3,6 +3,7 @@ import pygame
 from numpy.typing import NDArray
 
 from ..coordinates import Viewport
+from .coverage import soften
 
 _COVERAGE = np.arange(256)
 _EDGE_ALPHA = np.rint(
@@ -36,7 +37,7 @@ class Outline:
             self._visible = bool(mask.any())
             if self._visible:
                 pixels = pygame.surfarray.pixels_alpha(self._source)
-                pixels[:] = mask.T * np.uint8(255)
+                pixels[:] = np.rint(soften(mask).T * 255).astype(np.uint8)
                 del pixels
                 pygame.transform.smoothscale(
                     self._source, self._scaled.get_size(), self._scaled

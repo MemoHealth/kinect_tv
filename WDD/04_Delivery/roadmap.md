@@ -61,6 +61,7 @@ Record its actual signal mode and test three visible people together.
 - MR-22 delivers Galaxy Mirror in its own scene PR.
 - MR-23 delivers Living Aquarium in its own scene PR.
 - MR-27 delivers Dansspegel in its own scene PR.
+- MR-26 refines shared contours and the existing long-exposure fade controls.
 
 The [worlds proposal](worlds-feasibility.md) records the scopes and common
 hardware gates. MR-21 and MR-24 are acceptance groups inside the Paint

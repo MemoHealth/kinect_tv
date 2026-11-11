@@ -53,6 +53,22 @@ physical observation on the target Kinect and TV.
 - [ ] No strobing, full-screen flashes, startling sounds or upsetting visuals.
 - [ ] Runtime operates without internet and without recording children.
 
+## New-world software checks, 2026-11-11
+
+- [x] Paint Explosion, Galaxy Mirror, Living Aquarium and Dansspegel have each
+  been reviewed by Astra before their PR. The separate shared contour change
+  was also reviewed.
+- [x] Synthetic fixtures exercise three figures, separated colors and short
+  merges, local stardust, fish attraction, jellyfish avoidance and both dance
+  styles. The source mask remains unchanged by display smoothing.
+- [x] Paint export is explicit and uses the generated artwork surface. Tests
+  compare the PNG to that surface after a separate UI surface is overwritten.
+  Elapsed-time fade is checked at 30 and 60 updates per second.
+- [ ] Test all new worlds with the real Kinect and three people on the TCL.
+  Hardware is unavailable for this delivery. Fish targets and dance figures
+  are derived from the visible contour; anatomical joint tracking is outside
+  the delivered baseline.
+
 ## Child observation (caregiver consent, no identity data)
 
 - [ ] 2+ observed trials with different age/height; record first response, any instructions required, confusion points and comfort.
