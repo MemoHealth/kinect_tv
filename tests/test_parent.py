@@ -3,7 +3,7 @@ import json
 import pygame
 
 from magic_rain.audio.ambient import AmbientRain
-from magic_rain.settings import Settings, load_settings, save_settings
+from magic_rain.settings import PAINT_SCENE, Settings, load_settings, save_settings
 from magic_rain.ui.parent import ROWS, ParentPanel
 
 
@@ -62,3 +62,16 @@ def test_audio_mute_remains_set_during_startup_fade(monkeypatch):
         assert ambient._sound.get_volume() == 0
     finally:
         ambient.stop()
+
+
+def test_legacy_light_painting_exposes_fade_without_an_export_action():
+    pygame.font.init()
+    try:
+        panel = ParentPanel()
+        panel.set_scene(PAINT_SCENE)
+        actions = [action for action, _ in panel.rows]
+        assert "paint_fade" in actions and "save_art" not in actions
+        panel.selected = actions.index("paint_fade")
+        assert panel.key(pygame.K_RIGHT) == ("paint_fade", 1)
+    finally:
+        pygame.font.quit()

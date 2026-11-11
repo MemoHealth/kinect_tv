@@ -1,5 +1,6 @@
 import numpy as np
 import pygame
+import pytest
 
 from magic_rain.coordinates import Viewport
 from magic_rain.render.lightpaint import LightPaint
@@ -24,3 +25,15 @@ def test_three_movements_leave_distinct_colors_that_decay_and_clear():
     canvas.fill((0, 0, 0))
     paint.draw(canvas)
     assert canvas.get_at((2, 4))[:3] == (0, 0, 0)
+
+
+@pytest.mark.parametrize("rate", (30, 60))
+def test_fade_uses_elapsed_time_at_multiple_update_rates(rate):
+    mask = np.zeros((16, 40), dtype=bool)
+    mask[4:12, 5:25] = True
+    paint = LightPaint(Viewport(0, 0, 40, 16), mask.shape)
+    paint.update(mask, 0)
+    initial = paint._history.sum()
+    for _ in range(rate * 6):
+        paint.update(mask, 1 / rate, half_life=6)
+    assert paint._history.sum() == pytest.approx(initial / 2, rel=1e-4)
