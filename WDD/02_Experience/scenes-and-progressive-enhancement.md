@@ -110,6 +110,20 @@ horizontal mapping, both new styles, expiry of RGB history, depth fallback
 and old settings recovery. New capture libraries, recording and a GPU
 framework are out of scope.
 
+### Fruit Ninja (MR-29)
+
+Soft procedural fruit rises from below the scene. Movement of any visible
+silhouette can split a fruit, with two falling halves and a small splash.
+Stationary silhouettes keep their outline. Uncut fruit falls away and new
+fruit arrives continuously. Three players share the same fruit field.
+
+The scene uses original sprites and a bounded simulation with at most seven
+whole fruits, fourteen fragments and 120 splash particles. Local motion
+intersects a swept fruit path. Tests cover three simultaneous cuts,
+stationary-versus-moving input, continuous respawn and bounded storage.
+The requirements and exclusions are recorded in the worlds proposal.
+The experience has no score, timer, bomb, win state or required command.
+
 ## Optional reliable skeleton feature gate
 
 Pose magic is a separate feature flag (`pose_magic=false` initially). Requires simultaneous RGB+depth stability or proven single-stream human pose inference on real hardware; test with small children, different heights, occlusions, backlighting and overlap. If confidence is low, silently fall back to silhouette reactions. Any gesture must feel like an *amplification* of natural motion; avoid commands and tutorial overlays.
