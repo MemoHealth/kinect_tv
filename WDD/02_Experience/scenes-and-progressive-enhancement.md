@@ -58,6 +58,18 @@ and explicit export without camera, menu or diagnostic pixels. Risks include
 temporary color reassignment after occlusion and TV frame budget. Raw image
 capture, a pose dependency and automated saving are out of scope.
 
+### Galaxy Mirror (MR-22)
+
+A stationary silhouette contains a quiet glow and colored stars. Moving a
+limb emits short-lived dust locally from that contour. Background stars stay
+calm and all three visible players can contribute without RGB or joints.
+The scene has a fixed particle budget and clears on exit.
+
+Requirements MR-UX-02–04/06, MR-CV-02–04, MR-ART-03–05, MR-SYS-03/04.
+Reuse the existing viewport, contour and cached sprite renderer. Tests cover
+three stationary shapes, local moving emissions and empty-mask cleanup.
+GPU compute, raw color display and volumetric rendering are out of scope.
+
 ## Optional reliable skeleton feature gate
 
 Pose magic is a separate feature flag (`pose_magic=false` initially). Requires simultaneous RGB+depth stability or proven single-stream human pose inference on real hardware; test with small children, different heights, occlusions, backlighting and overlap. If confidence is low, silently fall back to silhouette reactions. Any gesture must feel like an *amplification* of natural motion; avoid commands and tutorial overlays.

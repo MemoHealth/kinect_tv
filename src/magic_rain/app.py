@@ -12,6 +12,7 @@ from .interaction.funhouse import Funhouse
 from .live import LiveInput
 from .render.arm_water import draw_arm_water
 from .render.color_mirror import ColorMirror
+from .render.galaxy import GalaxyMirror
 from .render.lightpaint import LightPaint
 from .render.outline import Outline
 from .render.output import Presenter, init_display, open_display
@@ -20,6 +21,7 @@ from .render.scene import Scene
 from .sensors.simulated import FRAME_SIZE, OBSTACLE_DEPTH_MM, SimulatedSensor
 from .settings import (
     FUNHOUSE_STRENGTH,
+    GALAXY_SCENE,
     PAINT_EXPLOSION,
     PAINT_SCENE,
     Settings,
@@ -34,6 +36,18 @@ from .ui.parent import ParentPanel
 STEP = 1 / DEMO_FPS
 VOLUME = {"Av": 0.0, "Lågt": 0.62, "Normal": 1.0}
 INTENSITY = {"Milt": 0.78, "Normalt": 1.0, "Livligt": 1.12}
+
+
+def make_world(
+    settings: Settings, field: Viewport, shape: tuple[int, int]
+) -> PaintExplosion | GalaxyMirror | None:
+    if settings.scene == PAINT_EXPLOSION:
+        world = PaintExplosion(field, shape)
+        world.configure(settings.paint_fade, settings.paint_palette)
+        return world
+    if settings.scene == GALAXY_SCENE:
+        return GalaxyMirror(field, shape)
+    return None
 
 
 def run_demo(windowed: bool, display: int | None = None, *, scene: str = "Regn") -> int:
@@ -93,11 +107,7 @@ def animate(
     settings = load_settings(path) if panel is not None else Settings(scene=demo_scene)
     if panel is not None:
         panel.set_scene(settings.scene)
-    paint = (
-        PaintExplosion(field, mask.shape) if settings.scene == PAINT_EXPLOSION else None
-    )
-    if paint is not None:
-        paint.configure(settings.paint_fade, settings.paint_palette)
+    world = make_world(settings, field, mask.shape)
     rain = DemoRain(DemoConfig(), snow=settings.scene != "Regn")
     arm_water = ArmWater()
     ambient.volume(0 if rain.snow else VOLUME[settings.sound])
@@ -144,11 +154,11 @@ def animate(
                 sensor.calibrate_or_retry(now, from_menu=True)
             elif name == "tilt":
                 panel.warning = sensor.tilt(delta, now)
-            elif name == "save_art" and paint is not None:
+            elif name == "save_art" and isinstance(world, PaintExplosion):
                 if getattr(event, "repeat", False):
                     continue
                 try:
-                    paint.save(Path.home() / "Pictures" / "Magic Rain")
+                    world.save(Path.home() / "Pictures" / "Magic Rain")
                     panel.warning = "Tavlan sparades i Bilder / Magic Rain."
                 except (OSError, pygame.error):
                     panel.warning = "Tavlan kunde inte sparas."
@@ -165,12 +175,9 @@ def animate(
                     lightpaint.clear()
                     use_color = settings.scene in FUNHOUSE_STRENGTH
                     color_mirror = ColorMirror(field, mask.shape) if use_color else None
-                    paint = (
-                        PaintExplosion(field, mask.shape)
-                        if settings.scene == PAINT_EXPLOSION else None
-                    )
-                if paint is not None:
-                    paint.configure(settings.paint_fade, settings.paint_palette)
+                    world = make_world(settings, field, mask.shape)
+                if isinstance(world, PaintExplosion):
+                    world.configure(settings.paint_fade, settings.paint_palette)
                 ambient.volume(0 if rain.snow else VOLUME[settings.sound])
                 saved = save_settings(path, settings)
                 panel.warning = "" if saved else "Inställningen sparades inte."
@@ -205,9 +212,9 @@ def animate(
         visible_mask = mirrors.warp(mask, warp)
         rgb = sensor.color_image if isinstance(sensor, LiveInput) and warp else None
         while remaining >= STEP:
-            if paint is not None:
-                if not panel_visible:
-                    paint.update(mask, STEP)
+            if world is not None:
+                if not (panel_visible and isinstance(world, PaintExplosion)):
+                    world.update(mask, STEP)
             elif painting:
                 lightpaint.update(mask, STEP)
             elif rgb is None:
@@ -219,9 +226,9 @@ def animate(
             canvas = scene.canvas
             color_mirror.draw(canvas, rgb, warp, mirrored=settings.mirror == "På")
             notice = ""
-        elif paint is not None:
+        elif world is not None:
             canvas = scene.canvas
-            paint.draw(canvas)
+            world.draw(canvas)
         elif painting:
             canvas = scene.canvas
             canvas.fill((5, 8, 21))
@@ -235,7 +242,7 @@ def animate(
             )
         if water is not None:
             draw_arm_water(canvas, water, field, snow=rain.snow)
-        if rgb is None and (paint is None or not panel_visible):
+        if rgb is None and not (isinstance(world, PaintExplosion) and panel_visible):
             outline.draw(canvas, visible_mask, dt)
         if notice:
             caption = notice_font.render(notice, True, (199, 216, 230))
