@@ -57,6 +57,8 @@ In that scene, the adult panel offers **Färgens toning**, **Spelarfärger** and
 **Spara tavla**. Opening the panel holds the artwork. Saving writes the
 generated artwork as a PNG in `Pictures/Magic Rain` inside the Windows user
 profile. The exported image excludes the menu and camera pixels.
+Galaxy Mirror turns the silhouettes into glowing constellations. Moving
+arms scatter a bounded cloud of stardust.
 Lustiga huset displays a live color reflection locally. Choose it again each
 session to display the reflection.
 **Kameravinkel** uses the left/right keys or the −/+ buttons. Aim with the live
