@@ -62,6 +62,10 @@ arms scatter a bounded cloud of stardust.
 Living Aquarium adds fish that approach the silhouette's upper outer points
 and jellyfish that drift away. Hand following is approximated from the
 silhouette and works with three visible players without pose tracking.
+Dansspegel turns the silhouettes into softly drawn stick figures. Choose
+**Figur → Skelett** in the adult panel for a friendly skeleton look.
+The lines are derived from the visible silhouette, so hidden limbs and
+precise anatomical joints are outside this mode's current tracking.
 Lustiga huset displays a live color reflection locally. Choose it again each
 session to display the reflection.
 **Kameravinkel** uses the left/right keys or the −/+ buttons. Aim with the live

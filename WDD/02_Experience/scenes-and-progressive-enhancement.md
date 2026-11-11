@@ -83,6 +83,20 @@ Tests cover three sets of targets, fish approach, jellyfish avoidance and
 empty-scene recovery. Precise hand joints, identity tracking, new assets,
 fluid simulation and RGB are out of scope.
 
+### Dansspegel (MR-27)
+
+The scene derives a central line from each visible silhouette and draws a
+friendly colored stick figure. Up to three players can contribute. The
+adult chooses Streck or Skelett. The skeleton look uses the same derived
+geometry with ivory strokes, simple ribs and a friendly round head.
+Lines render on a larger cached layer and scale down with antialiasing.
+
+Requirements MR-UX-02–04/06, MR-CV-02–04, MR-ART-03–06, MR-SYS-04.
+Tests cover three silhouettes, preservation of the source mask, a style
+switch and clearing on loss. This is silhouette-derived geometry; it does
+not supply anatomical joints or infer hidden limbs. Accurate SDK skeleton
+tracking remains a separately gated enhancement.
+
 ## Optional reliable skeleton feature gate
 
 Pose magic is a separate feature flag (`pose_magic=false` initially). Requires simultaneous RGB+depth stability or proven single-stream human pose inference on real hardware; test with small children, different heights, occlusions, backlighting and overlap. If confidence is low, silently fall back to silhouette reactions. Any gesture must feel like an *amplification* of natural motion; avoid commands and tutorial overlays.

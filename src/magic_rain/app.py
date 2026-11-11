@@ -13,6 +13,7 @@ from .live import LiveInput
 from .render.aquarium import LivingAquarium
 from .render.arm_water import draw_arm_water
 from .render.color_mirror import ColorMirror
+from .render.dance import DanceMirror
 from .render.galaxy import GalaxyMirror
 from .render.lightpaint import LightPaint
 from .render.outline import Outline
@@ -22,6 +23,7 @@ from .render.scene import Scene
 from .sensors.simulated import FRAME_SIZE, OBSTACLE_DEPTH_MM, SimulatedSensor
 from .settings import (
     AQUARIUM_SCENE,
+    DANCE_SCENE,
     FUNHOUSE_STRENGTH,
     GALAXY_SCENE,
     PAINT_EXPLOSION,
@@ -42,7 +44,7 @@ INTENSITY = {"Milt": 0.78, "Normalt": 1.0, "Livligt": 1.12}
 
 def make_world(
     settings: Settings, field: Viewport, shape: tuple[int, int]
-) -> PaintExplosion | GalaxyMirror | LivingAquarium | None:
+) -> PaintExplosion | GalaxyMirror | LivingAquarium | DanceMirror | None:
     if settings.scene == PAINT_EXPLOSION:
         world = PaintExplosion(field, shape)
         world.configure(settings.paint_fade, settings.paint_palette)
@@ -51,6 +53,10 @@ def make_world(
         return GalaxyMirror(field, shape)
     if settings.scene == AQUARIUM_SCENE:
         return LivingAquarium(field, shape)
+    if settings.scene == DANCE_SCENE:
+        dancer = DanceMirror(field, shape)
+        dancer.configure(settings.dance_style)
+        return dancer
     return None
 
 
@@ -182,6 +188,8 @@ def animate(
                     world = make_world(settings, field, mask.shape)
                 if isinstance(world, PaintExplosion):
                     world.configure(settings.paint_fade, settings.paint_palette)
+                if isinstance(world, DanceMirror):
+                    world.configure(settings.dance_style)
                 ambient.volume(0 if rain.snow else VOLUME[settings.sound])
                 saved = save_settings(path, settings)
                 panel.warning = "" if saved else "Inställningen sparades inte."
@@ -246,7 +254,10 @@ def animate(
             )
         if water is not None:
             draw_arm_water(canvas, water, field, snow=rain.snow)
-        if rgb is None and not (isinstance(world, PaintExplosion) and panel_visible):
+        hide_outline = isinstance(world, DanceMirror) or (
+            isinstance(world, PaintExplosion) and panel_visible
+        )
+        if rgb is None and not hide_outline:
             outline.draw(canvas, visible_mask, dt)
         if notice:
             caption = notice_font.render(notice, True, (199, 216, 230))
