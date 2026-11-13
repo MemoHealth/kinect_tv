@@ -81,6 +81,22 @@ physical observation on the target Kinect and TV.
   are derived from the visible contour; anatomical joint tracking is outside
   the delivered baseline.
 
+## Noise and slicing follow-up
+
+- [x] A 45-second real Kinect empty-room comparison completed without sensor
+  faults, at 54.11 FPS average and 32 ms p95 frame interval. The old Fruit
+  Ninja logic cut 25 fruits from room noise; the new logic cut zero.
+  Spawn schedules differ, so this is an empty-room fault check, not a
+  comparative success rate.
+- [ ] The subsequent human run failed body acceptance. It averaged 41.28 FPS,
+  but calibration included part of the person and the image clipped the head.
+  The initial adaptive margin removed too much torso. The revised farther
+  reference and bounded margin have synthetic crossing tests; repeat the
+  human test before marking calibration or slicing sensitivity accepted.
+- [x] Real game and adult-preview screenshots were saved locally with the
+  owner's explicit request. They remain outside GitHub. The failed run is
+  retained as evidence.
+
 ## Child observation (caregiver consent, no identity data)
 
 - [ ] 2+ observed trials with different age/height; record first response, any instructions required, confusion points and comfort.

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 import numpy as np
+import pygame
 from numpy.typing import NDArray
 
 from ..sensors.base import SensorFrame
@@ -21,6 +22,7 @@ class ForegroundTracker:
         self, background: NDArray[np.uint16], *, mirrored: bool = True,
         color_reference: NDArray[np.uint8] | None = None,
         open_background: NDArray[np.bool_] | None = None,
+        foreground_margin: NDArray[np.int32] | None = None,
     ) -> None:
         self._background = background.astype(np.int32)
         self._mirrored = mirrored
@@ -28,6 +30,10 @@ class ForegroundTracker:
         self._last: Foreground | None = None
         self._color_reference = color_reference
         self._open_background = open_background
+        self._foreground_margin = (
+            120 if foreground_margin is None else foreground_margin
+        )
+        self._surface = pygame.Surface(background.shape[::-1], pygame.SRCALPHA)
         self.color_assist = True
         self._margin = 0.0
         self._far = 3800
@@ -49,7 +55,9 @@ class ForegroundTracker:
         depth = frame.depth_mm
         measured = (self._background != 0) & (depth != 0)
         in_range = (depth >= 850) & (depth <= self._far)
-        foreground = in_range & measured & (self._background - depth >= 120)
+        foreground = in_range & measured & (
+            self._background - depth >= self._foreground_margin
+        )
         revealed = None
         if self._open_background is not None:
             revealed = in_range & self._open_background
@@ -75,6 +83,7 @@ class ForegroundTracker:
             | core[1:-1, 2:]
         )
         mask = (foreground & coherent) | (measured & (neighbours == 4))
+        mask = self._remove_speckles(mask)
         size = np.count_nonzero(mask)
         coverage = np.count_nonzero(measured)
         open_size = 0 if revealed is None else np.count_nonzero(mask & revealed)
@@ -88,6 +97,22 @@ class ForegroundTracker:
         usable_depth = coverage if revealed is None else coverage + revealed.sum()
         confidence = usable_depth / measured.size
         return Foreground(mask, confidence, frame.timestamp_monotonic_s, True)
+
+    def _remove_speckles(self, mask: NDArray[np.bool_]) -> NDArray[np.bool_]:
+        if not mask.any():
+            return mask
+        alpha = pygame.surfarray.pixels_alpha(self._surface)
+        alpha[:] = mask.T * np.uint8(255)
+        del alpha
+        minimum = max(12, round(mask.size * 64 / (320 * 240)))
+        regions = pygame.mask.from_surface(self._surface).connected_components(minimum)
+        clean = pygame.Mask(mask.shape[::-1])
+        for region in regions:
+            clean.draw(region, (0, 0))
+        clean.to_surface(
+            self._surface, setcolor=(255, 255, 255, 255), unsetcolor=(0, 0, 0, 0)
+        )
+        return pygame.surfarray.array_alpha(self._surface).T != 0
 
     def _recover_missing(
         self, mask: NDArray[np.bool_], measured: NDArray[np.bool_],

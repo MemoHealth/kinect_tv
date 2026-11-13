@@ -170,6 +170,7 @@ class LiveInput:
                     reference, mirrored=self._mirrored,
                     color_reference=self._calibration.color_reference,
                     open_background=self._calibration.open_background,
+                    foreground_margin=self._calibration.foreground_margin,
                 )
                 self._tracker.color_assist = self._color_assist
                 self._calibrate_at = None

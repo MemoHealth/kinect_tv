@@ -64,6 +64,29 @@ Record its actual signal mode and test three visible people together.
 - MR-26 refines shared contours and the existing long-exposure fade controls.
 - MR-28 replaces convex/concave with Spegelstudio and removes the old lens code.
 - MR-29 adds a simple original Fruit Ninja scene, with its own PR.
+- MR-30 measures empty-room depth variation and suppresses small foreground noise.
+- MR-31 hardens Fruit Ninja against jitter and adds faster fruit from above.
+- MR-32 rebuilds rain graphics with wind-aligned droplets and local water light.
+
+### MR-30 — Tolerant empty-room calibration
+
+Requirements MR-CV-02–04 and MR-SYS-04. Prefer the farther room surface
+and derive a per-pixel margin for moderate calibration variation.
+Reject small disconnected regions while preserving connected hands and arms.
+Touch background/foreground and live configuration. Tests cover noisy empty
+walls, speckles and three visible bodies, including a background with no depth.
+Risk is losing very small detached fragments. Drivers, identity inference and
+replacing the working SDK adapter are out of scope.
+
+### MR-31 — Intentional slicing and harder fruit
+
+Requirements MR-UX-02/03, MR-ART-02/05 and MR-SYS-04/06. Require displacement
+beyond a small jitter band, with nearby evidence that foreground moved away.
+Acquiring or losing a silhouette cannot cut fruit by itself. Match collision
+to the visible fruit and shorten the motion hold. Increase spawn frequency,
+use top-down fruit as well as upward arcs, and keep explicit storage bounds.
+Tests cover 1–2 pixel jitter, reacquisition, meaningful sweeps, three players
+and both spawn directions. Scores, bombs and required gestures are excluded.
 
 The [worlds proposal](worlds-feasibility.md) records the scopes and common
 hardware gates. MR-21 and MR-24 are acceptance groups inside the Paint
