@@ -10,6 +10,11 @@ def frame(depth, timestamp=1.0):
     return SensorFrame(timestamp, depth, None, width, height, "simulation")
 
 
+def enter(tracker, depth, timestamp=1.0):
+    tracker.update(frame(depth, timestamp), timestamp)
+    return tracker.update(frame(depth, timestamp + 1 / 30), timestamp + 1 / 30)
+
+
 def test_reference_prefers_room_surface_and_requires_coverage():
     calibration = BackgroundCalibration(sample_count=3)
     empty = np.full((30, 50), 3000, dtype=np.uint16)
@@ -32,7 +37,7 @@ def test_three_people_and_overlap_keep_all_visible_regions_and_mirror_once():
     people[8:34, 31:45] = 1750
     people[12:34, 60:71] = 2100
     tracker = ForegroundTracker(empty)
-    result = tracker.update(frame(people), 1)
+    result = enter(tracker, people)
     assert result.active
     assert result.mask[20, [70, 40, 10]].all()
     assert not result.mask[20, [20, 50]].any()
@@ -49,7 +54,7 @@ def test_empty_invalid_and_stale_frames_cannot_leave_a_frozen_silhouette():
     tracker = ForegroundTracker(background, mirrored=False)
     person = background.copy()
     person[10:35, 5:15] = 1500
-    assert tracker.update(frame(person), 1).active
+    assert enter(tracker, person).active
     assert tracker.update(None, 1.2).active
     assert not tracker.update(None, 1.3).mask.any()
     assert not tracker.update(frame(person), 1.4).active
@@ -89,18 +94,18 @@ def test_players_stay_whole_against_a_background_outside_depth_range():
     people[31:70, 75:87] = 2100
     people[10:45, 90:105] = 2000
     people[18:27, 32:43] = 3900
-    result = tracker.update(frame(people), 1).mask
+    result = enter(tracker, people, 1.1).mask
     assert result[16:76, 20].all()
     assert result[24:68, 54].all()
     assert result[32:69, 80].all()
     assert not result[:, 90:105].any()  # Intermittent returns are not open background.
     assert not result[18:27, 32:43].any()  # Beyond the play range.
-    assert not tracker.update(frame(np.full_like(empty, 1400)), 1).active
+    assert not tracker.update(frame(np.full_like(empty, 1400), 1.2), 1.2).active
 
     flood = empty.copy()
     flood[60:] = 1400
     flood[15:25, 12:29] = 1400
-    assert not tracker.update(frame(flood), 1).active
+    assert not tracker.update(frame(flood, 1.3), 1.3).active
 
 
 def test_variable_background_and_small_noise_do_not_dominate_three_players():
@@ -122,7 +127,7 @@ def test_variable_background_and_small_noise_do_not_dominate_three_players():
     for x in (40, 130, 250):
         noise[60:200, x:x + 18] = 1400
     noise[99:102, 58:85] = 1400
-    mask = tracker.update(frame(noise), 1).mask
+    mask = enter(tracker, noise, 1.1).mask
     assert mask[120, [48, 138, 258]].all()
     assert mask[100, 78]
     assert not mask[12:18, 15:21].any()
@@ -140,8 +145,8 @@ def test_brief_body_in_calibration_does_not_inflate_the_noise_margin():
         reference, mirrored=False, foreground_margin=calibration.foreground_margin
     )
     assert calibration.foreground_margin[100, 150] <= 360
-    assert tracker.update(frame(occupied), 1).mask[50:195, 130:175].all()
-    assert not tracker.update(frame(room), 1).active
+    assert enter(tracker, occupied).mask[50:195, 130:175].all()
+    assert not tracker.update(frame(room, 1.1), 1.1).active
 
 
 def test_moderate_body_separation_survives_a_mixed_calibration():
@@ -154,4 +159,74 @@ def test_moderate_body_separation_survives_a_mixed_calibration():
     tracker = ForegroundTracker(
         reference, mirrored=False, foreground_margin=calibration.foreground_margin
     )
-    assert tracker.update(frame(occupied), 1).mask[50:195, 130:175].all()
+    assert enter(tracker, occupied).mask[50:195, 130:175].all()
+
+
+def test_coherent_transient_noise_and_duplicate_frames_cannot_seed_players():
+    background = np.full((240, 320), 3000, dtype=np.uint16)
+    background[:100, :100] = 0
+    tracker = ForegroundTracker(
+        background, mirrored=False, open_background=background == 0
+    )
+    noise = background.copy()
+    noise[20:40, 20:40] = 1800  # Coherent return against unknown depth.
+    first = frame(noise)
+    assert not tracker.update(first, 1).active
+    assert not tracker.update(first, 1.01).active
+    assert not tracker.update(frame(background, 1.04), 1.04).active
+    assert not tracker.update(frame(noise, 1.08), 1.08).active
+    assert tracker.update(frame(noise, 1.12), 1.12).active
+    assert not tracker.update(frame(background, 1.16), 1.16).active
+    assert not tracker.update(frame(noise, 1.20), 1.20).active
+
+
+def test_connected_fast_arms_are_immediate_and_new_islands_need_confirmation():
+    background = np.full((240, 320), 3000, dtype=np.uint16)
+    tracker = ForegroundTracker(background, mirrored=False)
+    people = background.copy()
+    for x in (40, 130, 240):
+        people[60:200, x:x + 18] = 1800
+    assert enter(tracker, people).active
+    moved = background.copy()
+    for x in (46, 136, 246):
+        moved[60:200, x:x + 18] = 1800
+        moved[100:103, x - 30:x] = 1800
+    moved[20:35, 180:195] = 1800
+    mask = tracker.update(frame(moved, 1.07), 1.07).mask
+    assert mask[101, [20, 110, 220]].all()
+    assert mask[140, [53, 143, 253]].all()
+    assert not mask[20:35, 180:195].any()
+    assert not mask[140, 42]  # No trailing copy of the old body.
+
+
+def test_depth_hysteresis_limits_threshold_flicker_but_never_holds_invalid_depth():
+    room = np.full((240, 320), 3000, dtype=np.uint16)
+    tracker = ForegroundTracker(room, mirrored=False)
+    body = room.copy()
+    body[40:200, 100:150] = 2840
+    assert enter(tracker, body).active
+    for index, depth in enumerate((2888, 2898, 2881, 2895)):
+        body[40:200, 100:150] = depth
+        timestamp = 1.07 + index / 30
+        result = tracker.update(frame(body.copy(), timestamp), timestamp)
+        assert result.mask[100, 125]
+    body[40:200, 100:150] = 0
+    assert not tracker.update(frame(body, 1.22), 1.22).active
+    body[40:200, 100:150] = 2895
+    assert not tracker.update(frame(body, 1.25), 1.25).active
+
+
+def test_gaps_configuration_and_floods_cannot_confirm_new_regions():
+    room = np.full((240, 320), 3000, dtype=np.uint16)
+    body = room.copy()
+    body[40:200, 100:150] = 1800
+    tracker = ForegroundTracker(room, mirrored=False)
+    assert not tracker.update(frame(body), 1).active
+    assert not tracker.update(frame(body, 1.2), 1.2).active
+    assert tracker.update(frame(body, 1.24), 1.24).active
+    assert not tracker.update(None, 1.6).active
+    assert not tracker.update(frame(body, 1.61), 1.61).active
+    tracker.configure(mirrored=False, margin=0, far=3800)
+    assert not tracker.update(frame(body, 1.65), 1.65).active
+    assert not tracker.update(frame(np.full_like(room, 1400), 1.69), 1.69).active
+    assert not tracker.update(frame(body, 1.73), 1.73).active

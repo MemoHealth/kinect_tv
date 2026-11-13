@@ -111,6 +111,33 @@ physical observation on the target Kinect and TV.
 - [ ] Human calibration, slicing sensitivity and new rain comfort on the
   actual TV remain pending. The owner chose graphics and automated testing
   instead of another camera run. No additional live images were captured.
+
+## Stable silhouettes, 2026-11-13
+
+- [x] The 240-frame synthetic three-player fixture retained 100% of the body
+  pixels after entry. Four coherent 12 x 12 transient islands were injected
+  every other frame, including near the play-zone edges. Maximum false
+  foreground fell from 577 to 1 pixel (local hole repair), with no detached
+  islands visible in the updated screenshot. This is a controlled fixture,
+  not an observed real-room false-positive rate.
+- [x] Automated cases cover one extra sensor-frame confirmation delay, duplicate
+  timestamps, connected fast thin arms, three moving people, threshold
+  hysteresis, invalid depth, flood rejection and stale/configuration resets.
+  Drawing tests cover small-edge damping, fast movement, reentry and elapsed
+  time at 30/60 FPS; display smoothing never changes the collision mask.
+- [x] Astra approved the final synthetic contours and code for a draft PR, with the performance and physical acceptance gates still open.
+- [x] Synthetic before/after graphics were saved locally. CPU cost was measured
+  rather than inferred from appearance. One paired full logical rain step
+  measured median/p95 35.77/59.00 ms before and 36.96/59.19 ms after. This
+  includes mask, motion, two physics steps, rain drawing and outline, but
+  excludes camera, audio, arm-water and TV presentation. Further samples
+  varied substantially even for the old renderer. No sustained-FPS claim.
+- [ ] The 33.3 ms frame budget is NOT accepted. Native-TV sustained performance
+  and a real human tracking trial remain pending. The source and PR are
+  software-ready, not a completed hardware release. No camera run was made.
+- [ ] Persistent coherent room noise, or noise attached to a body, can still
+  survive. This filter is not a person classifier. Check calibration and
+  visible whole-body framing during the next operator-run trial.
 ## Child observation (caregiver consent, no identity data)
 
 - [ ] 2+ observed trials with different age/height; record first response, any instructions required, confusion points and comfort.

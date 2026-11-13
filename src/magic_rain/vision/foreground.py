@@ -28,6 +28,10 @@ class ForegroundTracker:
         self._mirrored = mirrored
         self._empty = np.zeros(background.shape, dtype=np.bool_)
         self._last: Foreground | None = None
+        self._timestamp: float | None = None
+        self._accepted = self._empty
+        self._candidate_bits = pygame.Mask(background.shape[::-1])
+        self._accepted_bits = pygame.Mask(background.shape[::-1])
         self._color_reference = color_reference
         self._open_background = open_background
         self._foreground_margin = (
@@ -43,11 +47,25 @@ class ForegroundTracker:
         self._margin = margin
         self._far = far
         self._last = None
+        self._reset_history()
+
+    def _reset_history(self) -> None:
+        self._timestamp = None
+        self._accepted = self._empty
+        self._candidate_bits.clear()
+        self._accepted_bits.clear()
 
     def update(self, frame: SensorFrame | None, now: float) -> Foreground:
-        if frame is not None and now - frame.timestamp_monotonic_s <= STALE_S:
+        if (frame is not None and now - frame.timestamp_monotonic_s <= STALE_S
+                and (self._timestamp is None
+                     or frame.timestamp_monotonic_s > self._timestamp)):
+            if (self._timestamp is not None
+                    and frame.timestamp_monotonic_s - self._timestamp > 0.100001):
+                self._reset_history()
             self._last = self._segment(frame)
+            self._timestamp = frame.timestamp_monotonic_s
         if self._last is None or now - self._last.timestamp_monotonic_s > STALE_S:
+            self._reset_history()
             return Foreground(self._empty, 0.0, now, False)
         return self._last
 
@@ -56,7 +74,7 @@ class ForegroundTracker:
         measured = (self._background != 0) & (depth != 0)
         in_range = (depth >= 850) & (depth <= self._far)
         foreground = in_range & measured & (
-            self._background - depth >= self._foreground_margin
+            self._background - depth >= self._foreground_margin - 30 * self._accepted
         )
         revealed = None
         if self._open_background is not None:
@@ -82,13 +100,18 @@ class ForegroundTracker:
             | core[1:-1, :-2]
             | core[1:-1, 2:]
         )
-        mask = (foreground & coherent) | (measured & (neighbours == 4))
+        mask = (foreground & coherent) | (in_range & measured & (neighbours == 4))
         mask = self._remove_speckles(mask)
         size = np.count_nonzero(mask)
         coverage = np.count_nonzero(measured)
         open_size = 0 if revealed is None else np.count_nonzero(mask & revealed)
         active = 12 <= size <= mask.size * 0.65 and size - open_size <= coverage * 0.90
         if not active:
+            self._reset_history()
+            return Foreground(self._empty, 0.0, frame.timestamp_monotonic_s, False)
+        mask = self._confirm_regions(mask)
+        self._accepted = mask.copy()
+        if not mask.any():
             return Foreground(self._empty, 0.0, frame.timestamp_monotonic_s, False)
         if self.color_assist and frame.rgb_coordinates is not None:
             self._recover_missing(mask, measured, frame, margin)
@@ -106,9 +129,31 @@ class ForegroundTracker:
         del alpha
         minimum = max(12, round(mask.size * 64 / (320 * 240)))
         regions = pygame.mask.from_surface(self._surface).connected_components(minimum)
+        self._regions = regions
         clean = pygame.Mask(mask.shape[::-1])
         for region in regions:
             clean.draw(region, (0, 0))
+        self._current_bits = clean
+        clean.to_surface(
+            self._surface, setcolor=(255, 255, 255, 255), unsetcolor=(0, 0, 0, 0)
+        )
+        return pygame.surfarray.array_alpha(self._surface).T != 0
+
+    def _confirm_regions(self, mask: NDArray[np.bool_]) -> NDArray[np.bool_]:
+        # Confirm new islands, but do not delay a connected arm's new position.
+        clean = pygame.Mask(mask.shape[::-1])
+        minimum = max(12, round(mask.size * 64 / (320 * 240)))
+        for region in self._regions:
+            established = region.overlap_area(self._accepted_bits, (0, 0)) >= max(
+                4, minimum // 4
+            )
+            confirmed = region.overlap_area(self._candidate_bits, (0, 0)) >= max(
+                minimum, round(region.count() * 0.25)
+            )
+            if established or confirmed:
+                clean.draw(region, (0, 0))
+        self._candidate_bits = self._current_bits
+        self._accepted_bits = clean
         clean.to_surface(
             self._surface, setcolor=(255, 255, 255, 255), unsetcolor=(0, 0, 0, 0)
         )
