@@ -75,6 +75,12 @@ Fruit Ninja brings faster fruit from above and in upward arcs. Use a
 clear hand or arm sweep to split it. Small contour jitter and initial
 silhouette acquisition do not count as a cut. Up to three visible players
 share the field.
+Stjärngas adds a shared cloud of gravity-free light particles. Slow body
+movements gently push them aside; consistent faster sweeps send them away
+with short warm trails. Walls and bodies absorb some energy at each bounce.
+Weak repulsion and time-based damping spread and quiet the cloud after play.
+Milt shows 300 dimmer particles with fewer trails; Normalt and Livligt show
+600. The same bounded physics pool remains active when intensity changes.
 **Kameravinkel** uses the left/right keys or the −/+ buttons. Aim with the live
 view in the menu, choose **Kalibrera kameran**, then step aside during the
 three-second countdown. Keep the area empty until the menu reads

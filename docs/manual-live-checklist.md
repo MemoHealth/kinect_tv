@@ -138,6 +138,36 @@ physical observation on the target Kinect and TV.
 - [ ] Persistent coherent room noise, or noise attached to a body, can still
   survive. This filter is not a person classifier. Check calibration and
   visible whole-body framing during the next operator-run trial.
+## Stjärngas, 2026-11-13
+
+- [x] Astra reviewed code and synthetic graphics. Its initial finding that
+  alternating +/-2 raw-pixel noise could impart false velocity was reproduced
+  and fixed using local multi-frame directional consistency. Both +/-1 and
+  +/-2 regression cases pass. Milt now reduces visible particles and trails.
+- [x] Ruff and all 91 tests pass. Gas coverage includes four directional
+  slow/fast sweeps, stillness, jitter, acquisition/reentry, three bodies,
+  swept thin-arm contact, wall energy loss, no gravity, mutual repulsion,
+  minute-long decay/density spread, 20 Hz sensor delivery and equivalent 30/60 FPS fixed-step input.
+- [x] Normal command entry point completed 75 simulated frames and exited
+  cleanly. The adult panel opened and closed in a synthetic live-input
+  fixture; no Kinect was opened and no user settings were overwritten.
+- [x] The final 180-frame three-player scenario used 600 particles and measured
+  18.07 ms median / 22.90 ms p95 for two fixed physics steps, scene drawing and
+  the shared outline at logical 1280 x 720. Capture, foreground segmentation,
+  audio and TV presentation are excluded. Initial unoptimized results missed
+  the budget; profiling removed large temporary arrays and scalar rounding.
+- [x] After the synthetic movement stopped, 60 seconds of simulation reduced
+  RMS speed to 3.150 logical pixels/s, 7.01% of the 44.943 peak. The pool stayed
+  at 600 particles, geometry history at eight or fewer and positions finite.
+  The earlier stronger pressure/drag tuning did not meet the 10% target and
+  was replaced with weaker repulsion and a 10-second velocity half-life.
+  Screenshots of active, settled and Milt states remain local and synthetic.
+- [ ] Real Kinect and native TV sustained performance, perceived contact
+  latency, very slow hand motion, three-person play and comfort remain NOT
+  TESTED. Logical timings are not a hardware release gate. Approximately
+  133 ms of consistent motion at 30 Hz (200 ms at 20 Hz, excluding other latency) is needed to turn a new movement into a punch;
+  direct obstacle displacement remains immediate.
+
 ## Child observation (caregiver consent, no identity data)
 
 - [ ] 2+ observed trials with different age/height; record first response, any instructions required, confusion points and comfort.
