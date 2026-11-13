@@ -1,3 +1,5 @@
+from dataclasses import replace
+
 import numpy as np
 
 from magic_rain.interaction.field import MotionField
@@ -21,13 +23,15 @@ def test_live_calibrates_keeps_three_regions_then_clears_on_fault(monkeypatch):
 
     inputs = iter(
         [(depth_frame(depth, t), None) for t in (1.0, 1.1, 1.2)]
-        + [(depth_frame(people, 1.3), None), (None, SensorHealth.NO_DEVICE)]
+        + [(depth_frame(people, t), None) for t in (1.3, 1.34)]
+        + [(None, SensorHealth.NO_DEVICE)]
     )
     monkeypatch.setattr(scene._capture, "take", lambda: next(inputs))
     for now in (1.0, 1.1, 1.2):
         assert not scene.mask(now).any()
     assert scene.notice == ""
-    assert scene.mask(1.3)[100, [50, 150, 250]].all()
+    assert not scene.mask(1.3).any()
+    assert scene.mask(1.34)[100, [50, 150, 250]].all()
     assert not scene.mask(1.4).any()
     assert "Kinect" in scene.notice
 
@@ -63,14 +67,17 @@ def test_registered_color_repairs_only_nearby_unmeasured_pixels():
     tracker = ForegroundTracker(background, color_reference=reference, mirrored=False)
     paired = SensorFrame(1.0, depth, rgb, 100, 80, "simulation",
                          rgb_coordinates=coordinates)
-    mask = tracker.update(paired, 1.0).mask
+    assert not tracker.update(paired, 1.0).active
+    second = replace(paired, timestamp_monotonic_s=1.04)
+    mask = tracker.update(second, 1.04).mask
     assert mask[40, 49:53].all()
     assert not mask[40, 53:].any()
     assert not mask[40, 29]  # RGB alone cannot replace measured background.
     unpaired = SensorFrame(1.1, depth, rgb, 100, 80, "simulation")
     assert not tracker.update(unpaired, 1.1).mask[40, 50]
     tracker.configure(mirrored=True, margin=0.12, far=3800)
-    assert np.array_equal(tracker.update(paired, 1.0).mask, mask[:, ::-1])
+    assert not tracker.update(paired, 1.0).active
+    assert np.array_equal(tracker.update(second, 1.04).mask, mask[:, ::-1])
 
 
 def test_registered_color_does_not_blank_mask_when_depth_coverage_is_sparse():
@@ -85,7 +92,9 @@ def test_registered_color_does_not_blank_mask_when_depth_coverage_is_sparse():
     frame = SensorFrame(1, depth, rgb, 320, 240, "simulation",
                         rgb_coordinates=np.stack((x, y), axis=2))
     tracker = ForegroundTracker(background, mirrored=False, color_reference=reference)
-    assert tracker.update(frame, 1).mask[40, 28:73].all()
+    assert not tracker.update(frame, 1).active
+    second = replace(frame, timestamp_monotonic_s=1.04)
+    assert tracker.update(second, 1.04).mask[40, 28:73].all()
 
 
 def test_manual_calibration_waits_then_completes_in_open_menu(monkeypatch):

@@ -6,6 +6,15 @@ A premium, calm, magical installation rather than an arcade: deep navy, blue-lil
 
 ## Animation grammar
 
+- MR-33 uses two small spatial coverage passes for the shared contour and
+  adaptive elapsed-time smoothing (45 ms for small edge changes, 12 ms for
+  larger changes). A pale cyan core and restrained halo improve line
+  continuity. This affects only drawing; physics and game interaction use
+  the confirmed binary foreground. A disappearing person fades without
+  interpolating toward another person's shape. No full-screen bloom or fill.
+  Combine core and halo in one lookup at half logical resolution, then
+  smoothly upscale; avoid a second full-size alpha layer and per-pixel exp.
+
 - MR-32 replaces the rain presentation with silver-blue pearl droplets,
   narrow feathered tails, wind-aligned cached angles and restrained depth.
   Near drops are fewer and clearer. Shoulder and arm contacts remain the

@@ -53,6 +53,14 @@ class Foreground:
   disconnected components are discarded;
   connected thin limbs retain the body mask.
 - On mask lost, decay rather than abrupt snap; never extrapolate indefinite limbs from stale data.
+- MR-33 confirms disconnected regions against a previous qualifying depth
+  frame (at most 100 ms apart); repeated timestamps cannot provide confirmation.
+  Current regions substantially overlapping an accepted region respond
+  immediately, including connected thin arms. Previously accepted pixels use
+  a 30 mm lower depth-exit threshold, still requiring valid in-range depth.
+  Floods cannot seed history. Stale input and configuration changes clear
+  confirmation and hysteresis state. This suppresses transient noise, not
+  persistent furniture or all noise touching a body.
 
 ## Geometry and fluid illusion
 

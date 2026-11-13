@@ -67,6 +67,22 @@ Record its actual signal mode and test three visible people together.
 - MR-30 measures empty-room depth variation and suppresses small foreground noise.
 - MR-31 hardens Fruit Ninja against jitter and adds faster fruit from above.
 - MR-32 rebuilds rain graphics with wind-aligned droplets and local water light.
+- MR-33 stabilizes newly appearing foreground regions and refines shared outlines.
+
+### MR-33 — Stable silhouettes and refined contours
+
+Requirements MR-CV-02–04, MR-ART-01/02/05 and MR-SYS-04/06. Confirm a new
+disconnected region in two distinct depth frames within 100 ms. Once confirmed,
+its connected moving arms remain immediate. Use a small depth hysteresis at
+previously accepted pixels, never retain invalid depth, and reset history on
+stale input or configuration changes. Refine the display-only outline with
+spatial antialiasing, short adaptive temporal smoothing and a restrained halo.
+Touch foreground, outline and their synthetic fixtures. Test coherent transient
+noise, repeated timestamps, three moving bodies, threshold flicker, invalid
+depth and fast thin arms. Compare synthetic before/after graphics and record
+CPU cost. Risks: one extra sensor-frame entry delay and persistent room objects
+remaining indistinguishable from people. No person classifier, SDK changes,
+drivers, full RGB segmentation or new dependencies. Human/TV acceptance pending.
 
 ### MR-30 — Tolerant empty-room calibration
 
