@@ -19,6 +19,10 @@ class DemoRain:
         self._start_speed = self.speed.copy()
         self.depth_band = np.digitize(self._start_speed, (190, 305))
         self.drift = rng.uniform(-9, 16, count)
+        self.velocity_x = self.drift.copy()
+        self.time = 0.0
+        self.floor_hits = np.zeros(count, dtype=bool)
+        self.floor_x = np.zeros(count)
         self._rng = rng
         self.slide = np.zeros(count)
         self.shimmer = np.zeros(count)
@@ -49,6 +53,7 @@ class DemoRain:
         water: ArmWater | None = None,
     ) -> None:
         width, height = SCENE_SIZE
+        self.time += dt
         acceleration, speed_margin = (7, 12) if self.snow else (36, 45)
         np.minimum(
             self.speed + acceleration * dt, self._start_speed + speed_margin,
@@ -95,6 +100,8 @@ class DemoRain:
 
         next_x = self.x + velocity * dt
         floor = height - 12 if water is not None else height + 20
+        self.floor_hits[:] = (next_y >= floor) & ~caught
+        self.floor_x[self.floor_hits] = next_x[self.floor_hits] % width
         recycled = (next_y >= floor) | caught
         self.x[:] = next_x % width
         self.x[recycled] = self._rng.uniform(0, width, np.count_nonzero(recycled))
@@ -110,3 +117,4 @@ class DemoRain:
                 self.x[index], self.y[index] = x, y
                 self.slide[index] = speed
                 self.shimmer[index] = 0.65
+        self.velocity_x[:] = drift + self.slide

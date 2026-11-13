@@ -6,6 +6,18 @@ A premium, calm, magical installation rather than an arcade: deep navy, blue-lil
 
 ## Animation grammar
 
+- MR-32 replaces the rain presentation with silver-blue pearl droplets,
+  narrow feathered tails, wind-aligned cached angles and restrained depth.
+  Near drops are fewer and clearer. Shoulder and arm contacts remain the
+  brightest local accents. A dim moonlit background and sparse out-of-focus
+  droplets add depth. Short floor ripples occur only after floor recycling.
+  Cached sprites, a fixed 24-ripple cap and the existing particle pool keep
+  rendering bounded. Snow retains its existing renderer. Tests cover tip
+  anchoring, bounded recycling rings and deterministic simulation. Compare
+  the new presentation with the prior scene using the same synthetic input.
+  Requirements MR-ART-01–06, MR-SYS-04/06. No GPU framework, shader dependency
+  or change to the original collision mask.
+
 - MR-26 filters coverage at sensor resolution before drawing the outline.
   The collision mask and arm-water geometry keep the original sensor data.
   Painting keeps a bright stroke core with a gently filtered edge.
