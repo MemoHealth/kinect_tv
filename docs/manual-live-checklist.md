@@ -97,6 +97,20 @@ physical observation on the target Kinect and TV.
   owner's explicit request. They remain outside GitHub. The failed run is
   retained as evidence.
 
+## Pearl rain graphics, 2026-11-13
+
+- [x] Astra reviewed the wind-aligned drop sprites, soft tips, local contact
+  light and explicit floor-impact rings. No blocking findings remain.
+- [x] Compared old and new renderers with identical synthetic three-player
+  masks and particle positions over 360 updates. The paired PNGs stay local.
+  The new render path measured 8.34 ms median and 14.12 ms p95 at 1280 x 720.
+  This excludes physics, camera capture and display presentation; it does not
+  certify native 4K frame rate.
+- [x] Ruff passes and all 72 automated tests pass, including rotated tip
+  anchoring, bounded floor rings and no floor impacts from caught water.
+- [ ] Human calibration, slicing sensitivity and new rain comfort on the
+  actual TV remain pending. The owner chose graphics and automated testing
+  instead of another camera run. No additional live images were captured.
 ## Child observation (caregiver consent, no identity data)
 
 - [ ] 2+ observed trials with different age/height; record first response, any instructions required, confusion points and comfort.

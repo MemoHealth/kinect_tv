@@ -48,7 +48,7 @@ three-person play remains an acceptance check.
 
 Esc or F1 opens and closes the Swedish adult panel. Choose **Avsluta** to quit.
 Under **Bana**, choose the weather, painting, galaxy, aquarium, dance or
-mirror scenes. In Regn and Snö, shape your arms like a cup to collect water or snow.
+mirror scenes. Regn now uses soft silver-blue droplets, wind-aligned tails, local contact light and subtle floor ripples. In Regn and Snö, shape your arms like a cup to collect water or snow.
 The level rises inside your silhouette until it spills over the lower arm.
 Opening your arms releases it. In Ljusmåleri, movement leaves rainbow trails
 that slowly fade.
