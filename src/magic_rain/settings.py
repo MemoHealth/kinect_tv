@@ -34,6 +34,7 @@ OPTIONS = {
     "paint_palette": tuple(PALETTES),
     "dance_style": ("Streck", "Skelett"),
     "mirror_style": ("Eko", "Kalejdoskop"),
+    "body_navigation": ("På", "Av"),
 }
 
 
@@ -50,6 +51,7 @@ class Settings:
     paint_palette: str = "Norrsken"
     dance_style: str = "Streck"
     mirror_style: str = "Eko"
+    body_navigation: str = "På"
 
     def change(self, key: str, delta: int) -> "Settings":
         values = OPTIONS[key]

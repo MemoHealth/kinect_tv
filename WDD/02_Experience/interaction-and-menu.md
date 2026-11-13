@@ -2,7 +2,7 @@
 
 ## Primary rule
 
-**The child-facing screen is the world itself.** No instruction banners, hand icons, progress indicators, score, buttons, gesture charts or long pauses. The system rewards exploration, not performance of commands.
+**The child-facing screen is the world itself.** No instruction banners, hand icons, progress indicators, score, buttons, gesture charts or long pauses. The system rewards exploration, not performance of commands. MR-35 is an explicit owner-requested exception for two discreet world-switch portals with temporary dwell feedback; baseline play still requires no gesture.
 
 ## Visual composition
 
@@ -66,7 +66,26 @@ Multiple foreground shapes influence the same rain naturally. No player IDs, mar
 - The panel offers presets for volume, intensity, mirror, horizontal zone, and distance. Only these settings go into the Windows user's local application data. The empty-room reference stays in memory and refreshes at startup and after reconnection.
 - The adult panel shows depth, the current silhouette and the playable frame. An amber edge indicates where the silhouette reaches the frame. Tilt moves in 5° steps within the SDK range with a cooldown. After aiming, the adult can select calibration and step aside during a countdown while the panel stays open.
 - Color assistance defaults to on. The menu shows whether registration is active, and the adult can disable it. Spegelstudio displays the actual color image when the adult selects that scene.
-- No gestures are used to navigate the menu. Adults use keyboard/mouse.
+- No gestures open or navigate the adult menu. Adults use keyboard/mouse.
+
+## Optional body world switching (MR-35)
+
+The owner requested hands-free scene selection. Two small portals sit inside
+the camera field, at 16%/84% width and 32% height. A lateral upper-body tip
+from a coherent person can hold either portal for 1.8 seconds to go to the
+previous/next world. A local ring and temporary destination name show progress.
+This is a silhouette approximation, not anatomical hand tracking. Reject
+short disconnected objects, torso/head-only occupancy and merged identities.
+
+Require a 0.4-second release before arming, stable tip position and fresh
+samples throughout the hold. Brief dropouts pause; longer loss resets. After
+switching, require release and a cooldown; never repeatedly cycle a held hand.
+Disable during camera notices/faults, the adult panel or the adult option
+Kroppsstyrt byte = Av. No gestures quit, save, tilt or calibrate. Mirror color
+display remains adult opt-in each session, so body cycling skips Spegelstudio
+until an adult selects it once. Hold only generated Paint Explosion artwork
+in memory when leaving that world, so body navigation does not erase it.
+Hardware reachability, accidental switching and accessibility remain pending.
 
 ## First-run calibration
 

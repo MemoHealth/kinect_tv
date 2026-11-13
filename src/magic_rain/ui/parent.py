@@ -16,6 +16,7 @@ ROWS = (
     ("distance", "Spelavstånd"),
     ("color_assist", "Färgstöd"),
     ("camera", "Kalibrera kameran"),
+    ("body_navigation", "Kroppsstyrt byte"),
     ("quit", "Avsluta"),
 )
 PANEL = pygame.Rect(210, 56, 860, 608)
@@ -43,12 +44,15 @@ class ParentPanel:
 
     @staticmethod
     def row(index: int) -> pygame.Rect:
-        return pygame.Rect(PANEL.x + 28, PANEL.y + 94 + index * 41, 510, 38)
+        return pygame.Rect(PANEL.x + 28, PANEL.y + 94 + index * 36, 510, 34)
 
     def _row(self, index: int) -> pygame.Rect:
         if self.rows == ROWS:
             return self.row(index)
-        return pygame.Rect(PANEL.x + 28, PANEL.y + 94 + index * 33, 510, 31)
+        spacing = 33 if len(self.rows) <= 14 else 30
+        return pygame.Rect(
+            PANEL.x + 28, PANEL.y + 94 + index * spacing, 510, spacing - 2
+        )
 
     def set_scene(self, scene: str) -> None:
         extra = ()

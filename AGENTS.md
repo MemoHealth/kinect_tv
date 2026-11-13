@@ -5,7 +5,7 @@ Applies to Claude Code, Codex and other coding agents. `CLAUDE.md` is a brief Cl
 ## Non-negotiable product invariants
 
 1. A child starts playing by **entering the camera field**, not by navigating a UI.
-2. During normal play: **zero instructional text, zero visible HUD, zero score, zero icons, zero buttons**. The scene itself gives feedback.
+2. During normal play: **zero instructional text, zero visible HUD, zero score, zero icons, zero buttons**. The scene itself gives feedback. **MR-35 owner-requested exception:** two discreet world-switch portals and their temporary dwell feedback may be shown; body navigation never opens adult controls or exits the app.
 3. Rain responds to the body's silhouette even if pose estimation fails. Advanced pose gestures must never block baseline play.
 4. Runtime is offline, locally processed, with no image/audio/video recording or transmission by default.
 5. Keyboard-only parent controls, not child-facing controls. Calm visuals, no flashes/strobes or jump scares.

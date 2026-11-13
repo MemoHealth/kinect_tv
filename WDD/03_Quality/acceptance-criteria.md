@@ -5,7 +5,7 @@
 | ID | Requirement | Acceptance evidence |
 |---|---|---|
 | MR-UX-01 | Launch directly into ambient rain after prior setup, full screen | S + H: no Start step, no splash/menu barrier |
-| MR-UX-02 | No child HUD or gesture instructions | S + H: normal-play screenshot has no text, score, icon, button or skeleton diagram |
+| MR-UX-02 | No child HUD or gesture instructions | S + H: normal-play screenshot has no text, score, icon, button or skeleton diagram, except MR-35's explicitly requested world portals and temporary hold feedback |
 | MR-UX-03 | Natural entry/exit | S + H: movement enters play automatically and returns gradually on exit; no child action needed |
 | MR-UX-04 | Mirror mapping | H: moving right hand to child's right corresponds to same-side visual movement in mirror perspective; tested explicitly |
 | MR-UX-05 | Calm parent menu | S + H: F1 and Esc open or close the menu. The adult can exit, choose a scene, aim Kinect with a live preview and calibrate in the open menu. The preview marks when foreground reaches a play-zone boundary. Settings persist and support keyboard and mouse. No child gesture opens the panel. |

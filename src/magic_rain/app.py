@@ -1,3 +1,4 @@
+from dataclasses import replace
 from pathlib import Path
 from time import monotonic
 
@@ -8,6 +9,7 @@ from .audio.ambient import AmbientRain
 from .config import DEMO_FPS, SCENE_SIZE, DemoConfig
 from .coordinates import Viewport
 from .interaction.field import MotionField
+from .interaction.scene_switch import BodySwitch, cycle_scene
 from .live import LiveInput
 from .render.aquarium import LivingAquarium
 from .render.arm_water import draw_arm_water
@@ -21,6 +23,7 @@ from .render.outline import Outline
 from .render.output import Presenter, init_display, open_display
 from .render.paint_explosion import PaintExplosion
 from .render.scene import Scene
+from .render.scene_switch import WorldPortals
 from .sensors.simulated import FRAME_SIZE, OBSTACLE_DEPTH_MM, SimulatedSensor
 from .settings import (
     AQUARIUM_SCENE,
@@ -51,10 +54,11 @@ World = (
 
 
 def make_world(
-    settings: Settings, field: Viewport, shape: tuple[int, int]
+    settings: Settings, field: Viewport, shape: tuple[int, int],
+    *, painting: PaintExplosion | None = None,
 ) -> World | None:
     if settings.scene == PAINT_EXPLOSION:
-        world = PaintExplosion(field, shape)
+        world = painting if painting is not None else PaintExplosion(field, shape)
         world.configure(settings.paint_fade, settings.paint_palette)
         return world
     if settings.scene == GALAXY_SCENE:
@@ -124,6 +128,8 @@ def animate(
     field = Viewport.fit(FRAME_SIZE, SCENE_SIZE)
     mask = np.zeros(FRAME_SIZE[::-1], dtype=np.bool_)
     outline = Outline(field, mask.shape)
+    body_switch = BodySwitch(mask.shape)
+    portals = WorldPortals(field, mask.shape)
     lightpaint = LightPaint(field, mask.shape)
     clock = pygame.time.Clock()
     motion = MotionField()
@@ -134,6 +140,8 @@ def animate(
     if panel is not None:
         panel.set_scene(settings.scene)
     world = make_world(settings, field, mask.shape)
+    saved_painting = world if isinstance(world, PaintExplosion) else None
+    mirror_unlocked = False
     rain = DemoRain(DemoConfig(), snow=settings.scene != "Regn")
     arm_water = ArmWater()
     ambient.volume(0 if rain.snow else VOLUME[settings.sound])
@@ -142,6 +150,24 @@ def animate(
     remaining = 0.0
     next_sample_ms = 0
     sensor.start()
+
+    def activate_scene(next_settings: Settings, *, adult: bool = False) -> None:
+        nonlocal settings, world, rain, arm_water, saved_painting, mirror_unlocked
+        if isinstance(world, PaintExplosion):
+            saved_painting = world
+        settings = next_settings
+        mirror_unlocked |= adult and settings.scene == MIRROR_SCENE
+        if panel is not None:
+            panel.set_scene(settings.scene)
+        rain = DemoRain(DemoConfig(), snow=settings.scene != "Regn")
+        arm_water = ArmWater()
+        lightpaint.clear()
+        world = make_world(settings, field, mask.shape, painting=saved_painting)
+        if isinstance(sensor, LiveInput):
+            sensor.configure(settings)
+        ambient.volume(0 if rain.snow else VOLUME[settings.sound])
+        if not demo and not save_settings(path, settings) and panel is not None:
+            panel.warning = "Inställningen sparades inte."
 
     while True:
         dt = min(clock.tick(DEMO_FPS) / 1000, 0.05)
@@ -180,6 +206,8 @@ def animate(
                 sensor.calibrate_or_retry(now, from_menu=True)
             elif name == "tilt":
                 panel.warning = sensor.tilt(delta, now)
+            elif name == "scene":
+                activate_scene(settings.change("scene", delta), adult=True)
             elif name == "save_art" and isinstance(world, PaintExplosion):
                 if getattr(event, "repeat", False):
                     continue
@@ -190,16 +218,10 @@ def animate(
                     panel.warning = "Tavlan kunde inte sparas."
             else:
                 settings = settings.change(name, delta)
-                if name in ("scene", "mirror", "zone", "distance", "color_assist"):
+                if name in ("mirror", "zone", "distance", "color_assist"):
                     sensor.configure(settings)
                 if name == "color_assist" and settings.color_assist == "På":
                     sensor.calibrate_or_retry(now, from_menu=True)
-                if name == "scene":
-                    panel.set_scene(settings.scene)
-                    rain = DemoRain(DemoConfig(), snow=settings.scene != "Regn")
-                    arm_water = ArmWater()
-                    lightpaint.clear()
-                    world = make_world(settings, field, mask.shape)
                 if isinstance(world, PaintExplosion):
                     world.configure(settings.paint_fade, settings.paint_palette)
                 if isinstance(world, DanceMirror):
@@ -233,6 +255,15 @@ def animate(
         else:
             mask = sensor.mask(now, preview=panel_visible)
             notice = sensor.notice
+
+        turn = body_switch.update(
+            mask, dt, enabled=(settings.body_navigation == "På"
+                              and not panel_visible and not notice),
+        )
+        if turn:
+            activate_scene(replace(settings, scene=cycle_scene(
+                settings.scene, turn, mirror_allowed=mirror_unlocked,
+            )))
 
         water = arm_water if settings.scene in ("Regn", "Snö") else None
         if water is not None:
@@ -272,6 +303,9 @@ def animate(
         )
         if not hide_outline:
             outline.draw(canvas, mask, dt)
+        portals.draw(
+            canvas, body_switch, settings.scene, mirror_allowed=mirror_unlocked
+        )
         if notice:
             caption = notice_font.render(notice, True, (199, 216, 230))
             rect = caption.get_rect(center=(SCENE_SIZE[0] // 2, SCENE_SIZE[1] - 65))
