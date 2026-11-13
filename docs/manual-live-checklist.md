@@ -188,6 +188,35 @@ physical observation on the target Kinect and TV.
   NOT TESTED. Tips are silhouette estimates; no anatomical hand identity is
   claimed. The explicit owner-requested portal exception is recorded in the
   agent contract and UX acceptance specification.
+## Living Aquarium coral garden, 2026-11-13
+
+- [x] Astra designed and reviewed the gather/travel/bloom loop, corrected the
+  initially overgenerous arrival zone and approved final school spacing and
+  synthetic graphics. Final receivers align with visible resting branches
+  at y=615 with a 32-pixel arrival radius. A regression proves that fish
+  100 pixels above the receiver cannot grant bloom.
+- [x] Ruff and all 103 tests pass. Garden cases cover three simultaneous
+  gatherings, no bloom at launch, actual arrival, lateral destination locking,
+  blocked-trip timeout, single-fish/no-target rejection, the integrated
+  aquarium loop, bounded storage, portal-lure exclusion and fish spacing.
+- [x] The normal simulated command entry completed 75 frames with clean exit.
+  The adult menu opened and closed in a synthetic live-input fixture without
+  opening Kinect. Milt slows fish and reduces food/bubbles without resetting
+  the garden or its fixed 24 fish and five jellyfish.
+- [x] A 900-frame, 30-simulated-second scenario began from unchanged seeded fish
+  positions and three moving synthetic silhouettes. First launch occurred at
+  2.03 seconds and first actual arrival at 6.50 seconds. Arrivals were 5/3/3
+  across the three corals. No success rate or child usability is inferred.
+- [x] Final update, drawing, shared outline and world-portal processing measured
+  22.85 ms median / 32.30 ms p95 at logical 1280 x 720. This includes two fixed
+  simulation steps per output frame, but excludes camera, foreground
+  segmentation, audio and 4K presentation. Half-resolution lure analysis
+  improved the initial 34.42 ms p95; body avoidance keeps the full mask.
+  All 29 creatures and at most 36 food pearls remain bounded; coral art uses
+  27 cached stages. Screenshots remain local and entirely synthetic.
+- [ ] Real child/seated discovery, hand approximation, occluded delivery paths,
+  accidental world switching and combined Kinect/native-TV sustained FPS
+  remain NOT VERIFIED. Logical timing is not a complete hardware release gate.
 ## Child observation (caregiver consent, no identity data)
 
 - [ ] 2+ observed trials with different age/height; record first response, any instructions required, confusion points and comfort.

@@ -64,9 +64,12 @@ generated artwork as a PNG in `Pictures/Magic Rain` inside the Windows user
 profile. The exported image excludes the menu and camera pixels.
 Galaxy Mirror turns the silhouettes into glowing constellations. Moving
 arms scatter a bounded cloud of stardust.
-Living Aquarium adds fish that approach the silhouette's upper outer points
-and jellyfish that drift away. Hand following is approximated from the
-silhouette and works with three visible players without pose tracking.
+Living Aquarium is a shared coral garden. Gather a small school near your
+hand or upper silhouette, then move laterally toward a sleeping coral. Some
+fish carry food down to it, and their actual arrival makes the coral bloom.
+You never need to reach the floor. Three players can awaken the garden
+without scores, failure or a color-matching puzzle. Jellyfish drift away.
+Hand following is approximated from the contour, without pose tracking.
 Dansspegel turns the silhouettes into softly drawn stick figures. Choose
 **Figur → Skelett** in the adult panel for a friendly skeleton look.
 The lines are derived from the visible silhouette, so hidden limbs and

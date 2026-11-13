@@ -64,7 +64,9 @@ def make_world(
     if settings.scene == GALAXY_SCENE:
         return GalaxyMirror(field, shape)
     if settings.scene == AQUARIUM_SCENE:
-        return LivingAquarium(field, shape)
+        aquarium = LivingAquarium(field, shape)
+        aquarium.configure(settings.intensity)
+        return aquarium
     if settings.scene == DANCE_SCENE:
         dancer = DanceMirror(field, shape)
         dancer.configure(settings.dance_style)
@@ -228,7 +230,7 @@ def animate(
                     world.configure(settings.dance_style)
                 if isinstance(world, MirrorStudio):
                     world.configure(settings.mirror_style)
-                if isinstance(world, StarGas):
+                if isinstance(world, (StarGas, LivingAquarium)):
                     world.configure(settings.intensity)
                 ambient.volume(0 if rain.snow else VOLUME[settings.sound])
                 saved = save_settings(path, settings)

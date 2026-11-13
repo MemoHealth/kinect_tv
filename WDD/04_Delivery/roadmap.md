@@ -70,6 +70,22 @@ Record its actual signal mode and test three visible people together.
 - MR-33 stabilizes newly appearing foreground regions and refines shared outlines.
 - MR-34 adds Stjärngas, a gravity-free shared particle cloud.
 - MR-35 adds deliberate body-held world switching, an explicit UX exception.
+- MR-36 gives Living Aquarium a cooperative coral-garden loop.
+
+### MR-36 — Wake the coral garden
+
+Requirements MR-UX-02/03/06, MR-CV-02–04, MR-ART-02/04/05 and MR-SYS-04/06.
+Keep the existing 24 fish and five jellyfish. Gather at least two fish near an
+upper-contour lure, send a small school to the nearest coral, then bloom only
+on actual fish arrival. Moving the lure laterally chooses another coral;
+short/seated players never need to reach the floor. Three schools can share
+the garden. Cache coral growth sprites and bound food pearls, missions and
+timers. Touch aquarium, new coral simulation/render helpers and tests.
+Test gathering, travel, arrival-only bloom, lateral choice, no target/no new
+mission, timeout, repeated play, storage bounds and three-person behavior.
+Have Astra review art and code before a separate PR. Risks: approximate hand
+targets, blocked routes and unobserved child discovery. No score, countdown,
+failure, color-matching puzzle, anatomical pose, driver or new dependency.
 
 ### MR-35 — Body-held world portals
 
