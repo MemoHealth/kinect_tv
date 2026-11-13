@@ -33,7 +33,10 @@ class Foreground:
 - Depth-only segmentation: stable empty-room depth reference; foreground if current valid distance is significantly **closer** than registered reference; reject invalid/hole pixels.
 - Initial working thresholds: 80–160 mm closer than background, morphological closing/opening, temporal smoothing, minimum component size calibrated to range. These are **not fixed universal constants**.
 - Bound active zone by near/far and adjustable left/right crop; mask must support children and adults, varying body sizes, multiple connected components, and partial occlusion.
-- MR-03 captures a bounded set of empty-room frames and computes a per-pixel median of valid measurements. The reference stays in memory. The mask keeps all coherent foreground regions in one field, including three participants, and mirrors that field once before scene mapping.
+- Calibration captures a bounded set of room frames and uses the farther
+  quartile of valid measurements. This preserves the room behind someone
+  briefly crossing the view. The reference stays in memory and the mask
+  includes all visible regions, mirrored once.
 - MR-18 also retains an empty-room color reference when available. Capture pairs
   depth and RGB by device timestamp and maps nearby depth estimates through the
   Kinect SDK. Color changes can fill a narrow strip beside verified depth when a
@@ -44,6 +47,11 @@ class Foreground:
   range can seed foreground against those pixels. The empty background alone
   never creates a silhouette.
 - Confidence decreases with excessive missing-depth pixels, unrealistically sparse mask, or stale frames; low confidence reduces dynamics gracefully.
+- MR-30 uses 90% of the calibration interquartile spread, bounded between
+  120 and 360 mm, as the foreground margin. This stays below the observed
+  separation when a person briefly crosses the room reference. Small
+  disconnected components are discarded;
+  connected thin limbs retain the body mask.
 - On mask lost, decay rather than abrupt snap; never extrapolate indefinite limbs from stale data.
 
 ## Geometry and fluid illusion

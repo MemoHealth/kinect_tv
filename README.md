@@ -87,6 +87,9 @@ distant background that gave no depth during calibration. Parts outside the
 camera view still require a different angle or more room. Camera frames stay
 in memory. Only preferences are saved in the Windows user's local application
 data.
+Calibration now prefers the farther room surface if someone briefly crosses
+the view, and filters small disconnected noise regions. The play area still
+needs to be clear while the room reference is captured.
 
 ## Windows launcher and TCL TV
 
