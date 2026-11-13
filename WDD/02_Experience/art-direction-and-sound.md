@@ -6,6 +6,13 @@ A premium, calm, magical installation rather than an arcade: deep navy, blue-lil
 
 ## Animation grammar
 
+- Stjärngas uses small Gaussian pearl sprites against deep blue. Low-speed
+  particles stay silver-blue; increasing speed adds warmer cores and short
+  trails, limited to 18 logical pixels. The body stays visually empty with
+  the shared contour. No particle connections, whole-screen glow or flashes.
+  Milt reduces visible particles, trail count and sprite alpha. Batch sprite
+  drawing and vectorized coordinates keep the look light on the CPU.
+
 - MR-33 uses two small spatial coverage passes for the shared contour and
   adaptive elapsed-time smoothing (45 ms for small edge changes, 12 ms for
   larger changes). A pale cyan core and restrained halo improve line

@@ -68,6 +68,23 @@ Record its actual signal mode and test three visible people together.
 - MR-31 hardens Fruit Ninja against jitter and adds faster fruit from above.
 - MR-32 rebuilds rain graphics with wind-aligned droplets and local water light.
 - MR-33 stabilizes newly appearing foreground regions and refines shared outlines.
+- MR-34 adds Stjärngas, a gravity-free shared particle cloud.
+
+### MR-34 — Stjärngas
+
+Requirements MR-CV-02–04, MR-ART-02/04/05 and MR-SYS-04/06. Reuse the stable
+foreground and Viewport. Add a fixed NumPy particle pool, moving-body contact,
+inelastic walls, time-based drag and a low-resolution density-pressure field
+for gentle mutual repulsion. Estimate local normal motion over recent distinct
+masks in simulation time, not a global body centroid or per-render displacement.
+Disregard the first detection and short edge jitter as velocity evidence.
+No gravity, random respawning, pose requirement, score or child controls.
+Touched modules: new simulation/gas.py, render/gas.py, app/settings integration,
+tests and experience specification. Tests cover directional slow/fast contact,
+swept collision, stillness, noise/reentry, three bodies, density relaxation,
+60-second energy decay and storage bounds. Benchmark synthetic update/draw;
+real Kinect/TV acceptance remains pending. No drivers, new dependencies,
+GPU framework, full pairwise solver or changes to existing rain physics.
 
 ### MR-33 — Stable silhouettes and refined contours
 

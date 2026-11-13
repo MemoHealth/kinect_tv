@@ -11,6 +11,7 @@ AQUARIUM_SCENE = "Living Aquarium"
 DANCE_SCENE = "Dansspegel"
 MIRROR_SCENE = "Spegelstudio"
 FRUIT_SCENE = "Fruit Ninja"
+GAS_SCENE = "Stjärngas"
 HALF_LIVES = {"Kort": 1.5, "Normal": 3.0, "Lång": 6.0}
 PALETTES = {
     "Norrsken": ((84, 221, 204), (255, 152, 135), (174, 155, 250)),
@@ -21,7 +22,7 @@ PALETTES = {
 OPTIONS = {
     "scene": (
         "Regn", "Snö", PAINT_SCENE, PAINT_EXPLOSION,
-        GALAXY_SCENE, AQUARIUM_SCENE, DANCE_SCENE, MIRROR_SCENE, FRUIT_SCENE,
+        GALAXY_SCENE, AQUARIUM_SCENE, DANCE_SCENE, MIRROR_SCENE, FRUIT_SCENE, GAS_SCENE,
     ),
     "sound": ("Av", "Lågt", "Normal"),
     "intensity": ("Milt", "Normalt", "Livligt"),

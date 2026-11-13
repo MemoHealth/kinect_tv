@@ -14,6 +14,7 @@ from .render.arm_water import draw_arm_water
 from .render.dance import DanceMirror
 from .render.fruit_ninja import FruitNinja
 from .render.galaxy import GalaxyMirror
+from .render.gas import StarGas
 from .render.lightpaint import LightPaint
 from .render.mirror_studio import MirrorStudio
 from .render.outline import Outline
@@ -26,6 +27,7 @@ from .settings import (
     DANCE_SCENE,
     FRUIT_SCENE,
     GALAXY_SCENE,
+    GAS_SCENE,
     HALF_LIVES,
     MIRROR_SCENE,
     PAINT_EXPLOSION,
@@ -44,7 +46,7 @@ VOLUME = {"Av": 0.0, "Lågt": 0.62, "Normal": 1.0}
 INTENSITY = {"Milt": 0.78, "Normalt": 1.0, "Livligt": 1.12}
 World = (
     PaintExplosion | GalaxyMirror | LivingAquarium
-    | DanceMirror | MirrorStudio | FruitNinja
+    | DanceMirror | MirrorStudio | FruitNinja | StarGas
 )
 
 
@@ -69,6 +71,10 @@ def make_world(
         return mirror
     if settings.scene == FRUIT_SCENE:
         return FruitNinja(field, shape)
+    if settings.scene == GAS_SCENE:
+        gas = StarGas(field, shape)
+        gas.configure(settings.intensity)
+        return gas
     return None
 
 
@@ -200,6 +206,8 @@ def animate(
                     world.configure(settings.dance_style)
                 if isinstance(world, MirrorStudio):
                     world.configure(settings.mirror_style)
+                if isinstance(world, StarGas):
+                    world.configure(settings.intensity)
                 ambient.volume(0 if rain.snow else VOLUME[settings.sound])
                 saved = save_settings(path, settings)
                 panel.warning = "" if saved else "Inställningen sparades inte."
