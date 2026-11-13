@@ -5,6 +5,8 @@ from ..settings import MIRROR_SCENE, OPTIONS
 from .color_slots import ColorSlots
 
 HOLD_S = 1.8
+PORTAL_POSITIONS = ((0.16, 0.32), (0.84, 0.32))
+PORTAL_RADIUS = 0.075
 
 
 def cycle_scene(current: str, direction: int, *, mirror_allowed: bool = False) -> str:
@@ -18,8 +20,8 @@ class BodySwitch:
     """Deliberate upper-contour dwell, never anatomical hand recognition."""
 
     def __init__(self, shape: tuple[int, int]) -> None:
-        self.centres = np.array(((0.16, 0.32), (0.84, 0.32))) * shape[::-1]
-        self.radius = shape[0] * 0.075
+        self.centres = np.array(PORTAL_POSITIONS) * shape[::-1]
+        self.radius = shape[0] * PORTAL_RADIUS
         self._stability_radius = shape[0] * 0.045
         self._shape = shape
         self._factor = 2 if shape[0] % 2 == shape[1] % 2 == 0 else 1

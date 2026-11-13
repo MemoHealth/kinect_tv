@@ -86,6 +86,39 @@ Tests cover three sets of targets, fish approach, jellyfish avoidance and
 empty-scene recovery. Precise hand joints, identity tracking, new assets,
 fluid simulation and RGB are out of scope.
 
+### Coral garden (MR-36, Living Aquarium extension)
+
+Give the aquarium a concrete cause-and-effect loop: gather a school near the
+hand, lead it laterally toward a sleeping coral, and watch some fish carry
+food down to it. A coral blooms only when couriers arrive. Three corals can
+be awake together; they rest gradually so play can continue without losing.
+At least two nearby fish and a short gathering interval trigger a delivery.
+Once launched, a trip's coral stays fixed. A blocked trip times out without
+granting bloom. One, two or three children may help, with any fish color.
+There are no numbers, score, win/lose overlays or color-matching requirements.
+
+Do not require the hand to touch the seabed: contour-based targets are in the
+upper body region. Existing fish attraction remains immediate. Food pearls
+and a short path suggest the gathered school's journey. Dormant branching
+corals become fuller and warmer over roughly two seconds after arrival.
+Leave world-switch portal zones free of feeding lures. Stabilize school
+targets, lock each delivery's destination, bound food to 36 rendered pearls,
+and reuse cached fish/jelly art. Real child/seated play and Kinect/TV comfort
+remain pending, regardless of synthetic loop and rendering evidence.
+
+Each school has eight fish. At least two within 100 logical pixels for
+0.7 seconds dispatch up to three, with an eight-second school cooldown.
+Visible receivers are at x=320/640/960, y=615; arrival requires radius 32
+and at least 0.6 seconds travel. Missions expire at 14 seconds without reward.
+Arrival adds 0.4 energy (cap 1), decaying over 80 seconds; bloom eases toward
+energy with a 0.85-second time constant. Already-awake coral (energy >=0.75)
+does not initiate new deliveries. Gentle bounded fish spacing within 42
+pixels keeps schools readable. Milt slows movement to 70%, limits food
+pearls to 18 and bubbles to 16; changing intensity preserves all fish.
+Analyze lure ownership at half sensor resolution; body avoidance and shared
+outlines still use the original mask. Coral rendering caches 27 growth
+sprites. No fullscreen filter or external asset is needed.
+
 ### Dansspegel (MR-27)
 
 The scene derives a central line from each visible silhouette and draws a
