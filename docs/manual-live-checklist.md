@@ -168,6 +168,26 @@ physical observation on the target Kinect and TV.
   133 ms of consistent motion at 30 Hz (200 ms at 20 Hz, excluding other latency) is needed to turn a new movement into a punch;
   direct obstacle displacement remains immediate.
 
+## Body world portals, 2026-11-13
+
+- [x] Synthetic cases cover an initial release gate, 1.8-second stable hold,
+  no repeat while held, cooldown/release, three bodies, short tip jitter,
+  sweeps, small noise, broad torso/head-only shapes, stale frames, disable
+  reset, both-portals ambiguity and known merged slots. Analysis pools 2x2
+  coverage for CPU cost; source masks and rendered contours stay unchanged.
+- [x] Application-loop integration switches Paint Explosion away and back
+  using scripted control events. The same generated painting and backing
+  trail survive. No real sensor is opened and settings are redirected to a
+  temporary directory. Reflection opt-in and scene cycling are unit tested.
+- [x] Local synthetic portal and maximum-row parent-panel screenshots were
+  visually evaluated. Portal update alone measured 3.34 ms median / 6.32 ms
+  p95 over 240 fresh three-person masks. This excludes rendering and capture.
+  The added adult row and Paint Explosion rows fit above the footer.
+- [ ] Actual reachability, seated/child heights, accidental activation during
+  other games, merged-player recovery and native-TV combined performance are
+  NOT TESTED. Tips are silhouette estimates; no anatomical hand identity is
+  claimed. The explicit owner-requested portal exception is recorded in the
+  agent contract and UX acceptance specification.
 ## Child observation (caregiver consent, no identity data)
 
 - [ ] 2+ observed trials with different age/height; record first response, any instructions required, confusion points and comfort.

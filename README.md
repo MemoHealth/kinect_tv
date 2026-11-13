@@ -47,6 +47,11 @@ The scene then reacts to all visible foreground regions. Physical
 three-person play remains an acceptance check.
 
 Esc or F1 opens and closes the Swedish adult panel. Choose **Avsluta** to quit.
+To change worlds with the body, hold an outstretched hand in one of the two
+small portals for 1.8 seconds. Left goes back, right goes forward. Release
+between changes. The adult can disable **Kroppsstyrt byte**. The color-camera
+mirror enters this cycle only after an adult selects it in the same session.
+Paint Explosion keeps its generated artwork in memory while another world plays.
 Under **Bana**, choose the weather, painting, galaxy, aquarium, dance or
 mirror scenes. Regn now uses soft silver-blue droplets, wind-aligned tails, local contact light and subtle floor ripples. In Regn and Snö, shape your arms like a cup to collect water or snow.
 The level rises inside your silhouette until it spills over the lower arm.

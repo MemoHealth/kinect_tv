@@ -69,6 +69,21 @@ Record its actual signal mode and test three visible people together.
 - MR-32 rebuilds rain graphics with wind-aligned droplets and local water light.
 - MR-33 stabilizes newly appearing foreground regions and refines shared outlines.
 - MR-34 adds Stjärngas, a gravity-free shared particle cloud.
+- MR-35 adds deliberate body-held world switching, an explicit UX exception.
+
+### MR-35 — Body-held world portals
+
+Requirements MR-UX-02/03/05, MR-CV-02–04 and MR-SYS-03/04/06. Touch settings,
+adult panel, app, new interaction/render scene-switch modules and tests. Two
+reachable lateral upper-zone portals use approximate silhouette tips, fresh
+input, a 1.8-second stable hold, release gate and cooldown. Reject small noise,
+head/torso-only occupancy, ambiguous merges and stale masks. Preserve one
+generated painting in memory; camera reflection remains adult-session opt-in.
+Tests cover deliberate switching, sweep rejection, jitter, three players,
+stale/lost/ambiguous input, disable/menu reset, scene cycle and painting return.
+Review visual feedback and menu layout with Astra before its own PR. Risks:
+contour tips are not true hand joints and hardware reachability is unverified.
+No SDK/driver change, skeleton dependency, saving or quitting by gesture.
 
 ### MR-34 — Stjärngas
 
