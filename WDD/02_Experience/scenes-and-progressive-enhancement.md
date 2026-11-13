@@ -112,14 +112,18 @@ framework are out of scope.
 
 ### Fruit Ninja (MR-29)
 
-Soft procedural fruit rises from below the scene. Movement of any visible
-silhouette can split a fruit, with two falling halves and a small splash.
+Procedural fruit falls from above as well as rising in arcs from below.
+About 65% spawns from above. Meaningful movement of any visible silhouette
+can split a fruit, with two falling halves and a small splash.
 Stationary silhouettes keep their outline. Uncut fruit falls away and new
 fruit arrives continuously. Three players share the same fruit field.
 
-The scene uses original sprites and a bounded simulation with at most seven
-whole fruits, fourteen fragments and 120 splash particles. Local motion
-intersects a swept fruit path. Tests cover three simultaneous cuts,
+The scene uses original sprites and a bounded simulation with at most ten
+whole fruits, twenty fragments and 160 splash particles. A four-sensor-pixel
+jitter band is excluded. New foreground must have nearby vacated foreground
+before it can cut; acquisition and loss alone cannot slice fruit. Motion is
+held for at most 65 ms and intersects the visible 22-pixel fruit radius.
+New fruit arrives every 0.32–0.56 s. Tests cover three simultaneous cuts,
 stationary-versus-moving input, continuous respawn and bounded storage.
 The requirements and exclusions are recorded in the worlds proposal.
 The experience has no score, timer, bomb, win state or required command.

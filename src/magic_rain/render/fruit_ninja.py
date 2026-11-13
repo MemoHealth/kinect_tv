@@ -9,6 +9,22 @@ from ..coordinates import Viewport
 from .sparks import Sparks
 
 FRUIT_COLORS = ((245, 145, 125), (244, 193, 98), (143, 218, 168))
+FRUIT_RADIUS = 22
+MOTION_HOLD_S = 0.065
+JITTER_RADIUS = 4
+
+
+def _grow(mask: NDArray[np.bool_], radius: int) -> NDArray[np.bool_]:
+    """Square sensor-pixel neighborhood, using bounded prefix sums."""
+    window = radius * 2 + 1
+    rows = np.cumsum(
+        np.pad(mask, ((radius + 1, radius), (0, 0))), axis=0, dtype=np.int32
+    )
+    vertical = rows[window:] > rows[:-window]
+    cols = np.cumsum(
+        np.pad(vertical, ((0, 0), (radius + 1, radius))), axis=1, dtype=np.int32
+    )
+    return cols[:, window:] > cols[:, :-window]
 
 
 @dataclass
@@ -41,7 +57,7 @@ class FruitNinja:
         self._next_fruit = 0.3
         self.fruits: list[Fruit] = []
         self.halves: list[Half] = []
-        self._juice = Sparks(120, seed=872)
+        self._juice = Sparks(160, seed=872)
         self._juice.palette(FRUIT_COLORS)
         self._sprites, self._pieces = self._fruit_sprites()
         self._background = self._sky()
@@ -80,16 +96,21 @@ class FruitNinja:
         return sprites, pieces
 
     def _moving_hit(self, fruit: Fruit, previous: tuple[float, float]) -> bool:
-        if self._motion_age > 0.12:
+        if self._motion_age > MOTION_HOLD_S:
             return False
         scale_x = self._shape[1] / self._field.width
         scale_y = self._shape[0] / self._field.height
-        x0 = max(0, int((min(fruit.x, previous[0]) - 29 - self._field.x) * scale_x))
-        x1 = min(self._shape[1],
-                 int((max(fruit.x, previous[0]) + 29 - self._field.x) * scale_x) + 1)
-        y0 = max(0, int((min(fruit.y, previous[1]) - 29 - self._field.y) * scale_y))
-        y1 = min(self._shape[0],
-                 int((max(fruit.y, previous[1]) + 29 - self._field.y) * scale_y) + 1)
+        radius = FRUIT_RADIUS
+        x0 = max(0, int((min(fruit.x, previous[0]) - radius - self._field.x) * scale_x))
+        x1 = min(
+            self._shape[1],
+            int((max(fruit.x, previous[0]) + radius - self._field.x) * scale_x) + 1,
+        )
+        y0 = max(0, int((min(fruit.y, previous[1]) - radius - self._field.y) * scale_y))
+        y1 = min(
+            self._shape[0],
+            int((max(fruit.y, previous[1]) + radius - self._field.y) * scale_y) + 1,
+        )
         if x1 <= x0 or y1 <= y0:
             return False
         rows, cols = np.nonzero(self._motion[y0:y1, x0:x1])
@@ -102,7 +123,7 @@ class FruitNinja:
         fraction = np.clip(projected / max(dx * dx + dy * dy, 1), 0, 1)
         distance = (x - previous[0] - fraction * dx) ** 2
         distance += (y - previous[1] - fraction * dy) ** 2
-        return bool((distance <= 29 ** 2).any())
+        return bool(np.count_nonzero(distance <= radius ** 2) >= 3)
 
     def _split(self, fruit: Fruit) -> None:
         for side in (0, 1):
@@ -110,7 +131,7 @@ class FruitNinja:
                 fruit.x, fruit.y, fruit.vx + (-70 if side == 0 else 70),
                 min(-35, fruit.vy * 0.3), fruit.color, side,
             ))
-        self.halves = self.halves[-14:]
+        self.halves = self.halves[-20:]
         self._juice.emit(
             np.full(12, fruit.x), np.full(12, fruit.y),
             np.full(12, fruit.color, dtype=np.uint8), 95, life=0.7,
@@ -119,28 +140,34 @@ class FruitNinja:
     def update(self, mask: NDArray[np.bool_], dt: float) -> None:
         self._motion_age += dt
         if mask is not self._previous:
-            self._motion = mask & ~self._previous
+            added = mask & ~_grow(self._previous, JITTER_RADIUS)
+            removed = self._previous & ~_grow(mask, JITTER_RADIUS)
+            self._motion = added & _grow(removed, 24)
             self._motion_age = 0
             self._previous = mask
         self._next_fruit -= dt
         if self._next_fruit <= 0:
-            self._next_fruit = float(self._rng.uniform(0.65, 1.05))
-            if len(self.fruits) < 7:
+            self._next_fruit = float(self._rng.uniform(0.32, 0.56))
+            if len(self.fruits) < 10:
+                from_top = self._rng.random() < 0.65
                 self.fruits.append(Fruit(
                     float(self._rng.uniform(self._field.x + 70,
                                             self._field.x + self._field.width - 70)),
-                    770, float(self._rng.uniform(-38, 38)),
-                    float(self._rng.uniform(-530, -420)), int(self._rng.integers(3)),
+                    -55 if from_top else SCENE_SIZE[1] + 50,
+                    float(self._rng.uniform(-95, 95)),
+                    float(self._rng.uniform(100, 190) if from_top
+                          else self._rng.uniform(-560, -460)),
+                    int(self._rng.integers(3)),
                 ))
         remaining = []
         for fruit in self.fruits:
             previous = fruit.x, fruit.y
-            fruit.vy += 240 * dt
+            fruit.vy += 270 * dt
             fruit.x += fruit.vx * dt
             fruit.y += fruit.vy * dt
             if self._moving_hit(fruit, previous):
                 self._split(fruit)
-            elif fruit.y < 815:
+            elif fruit.y < SCENE_SIZE[1] + 95 and -65 < fruit.x < SCENE_SIZE[0] + 65:
                 remaining.append(fruit)
         self.fruits = remaining
         for half in self.halves:
